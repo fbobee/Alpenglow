@@ -1,5 +1,3 @@
-adsf
-
 class PopularityModel : Model{
   %TypeHeaderCode
   #include "models/baseline/PopularityModel.h"
