@@ -1,7 +1,13 @@
+
 //enum class UpdaterMessage{
-//  start_of_fit,
-//  end_of_fit,
-//  start_of_implicit_update_cycle,
+//  %TypeHeaderCode
+//  #include "general_interfaces/Updater.h"
+//  %End
+//  start_of_offline_update, 
+//  end_of_offline_update,
+//  start_of_offline_iterations, 
+//  end_of_offline_iterations,
+//  start_of_implicit_update_cycle, 
 //  end_of_implicit_update_cycle
 //};
 class Updater{
@@ -13,3 +19,4 @@ class Updater{
 //    virtual void message(UpdaterMessage message);
     bool self_test();
 };
+

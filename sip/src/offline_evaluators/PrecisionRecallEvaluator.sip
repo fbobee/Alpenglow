@@ -1,3 +1,4 @@
+
 struct PrecisionRecallEvaluatorParameters{
   %TypeHeaderCode
   #include "offline_evaluators/PrecisionRecallEvaluator.h"
@@ -21,3 +22,4 @@ class PrecisionRecallEvaluator : public OfflineEvaluator{
     virtual void evaluate();
     bool self_test();
 };
+

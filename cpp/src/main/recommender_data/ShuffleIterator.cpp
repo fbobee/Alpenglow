@@ -10,6 +10,10 @@ RecDat* ShuffleIterator::next() {
   return shuffled_data_[counter_++];
 }
 
+RecDat* ShuffleIterator::get_actual(){
+  return shuffled_data_[counter_-1];
+}
+
 RecDat* ShuffleIterator::get(int index) const {
   if(index>=counter_) throw exception();
   return shuffled_data_[index];
@@ -34,12 +38,12 @@ bool ShuffleIterator::autocalled_initialize(){
   for (int i = 1; i<size(); i++){
     shuffled_data_.push_back(recommender_data_->get(i));
     if (shuffled_data_[i]->time>current_time){
-      random_shuffle(shuffled_data_.end()-same_time_counter,shuffled_data_.end()-1,random); 
+      random.random_shuffle(shuffled_data_.end()-same_time_counter,shuffled_data_.end()-1); 
       same_time_counter=1;
       current_time=shuffled_data_[i]->time;
     } else same_time_counter++;
   }
-  random_shuffle(shuffled_data_.end()-same_time_counter,shuffled_data_.end(),random); 
+  random.random_shuffle(shuffled_data_.end()-same_time_counter,shuffled_data_.end()); 
   return true;
 }
 

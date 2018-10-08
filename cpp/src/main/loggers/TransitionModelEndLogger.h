@@ -5,7 +5,7 @@
 #include <algorithm>
 #include "Logger.h"
 #include "../models/baseline/TransitionProbabilityModel.h"
-#include "../general_interfaces/INeedExperimentEnvironment.h"
+#include "../general_interfaces/NeedsExperimentEnvironment.h"
 #include "../utils/PopContainers.h"
 using namespace std;
 
@@ -17,7 +17,7 @@ struct TransitionModelEndLoggerParameters{
     max_length=-1;
   }
 };
-class TransitionModelEndLogger : public Logger, public INeedExperimentEnvironment, public Initializable{
+class TransitionModelEndLogger : public Logger, public NeedsExperimentEnvironment, public Initializable{
   public:
     TransitionModelEndLogger(TransitionModelEndLoggerParameters* params){
       model_=NULL;
@@ -31,7 +31,7 @@ class TransitionModelEndLogger : public Logger, public INeedExperimentEnvironmen
     }
     void run_core(ostream& ofs){
       //vector<map<int,int>> transition_frequencies_;
-      for(int item=0;item<model_->transition_frequencies_.size();item++){
+      for(uint item=0;item<model_->transition_frequencies_.size();item++){
         int out_degree = model_->transition_frequencies_[item].size();
         int popularity = pop_container_->get(item);
         ofs << item << " " << out_degree << " " << popularity;
@@ -45,7 +45,7 @@ class TransitionModelEndLogger : public Logger, public INeedExperimentEnvironmen
             [](pair<int,int> a, pair<int,int> b) -> bool
                { return (a.second) > (b.second); }
             );
-        for(int index=0;index<to_items.size() and index<max_length_;index++){
+        for(uint index=0;index<to_items.size() and index<max_length_;index++){
           ofs << " " << to_items[index].first << "," << to_items[index].second;
         }
         ofs << endl;

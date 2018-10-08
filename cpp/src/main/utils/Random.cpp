@@ -29,3 +29,16 @@ double Random::get_arctg(double y) {
   return tan(state/(mod + 1.0) *area)/y;
 }
 
+int Random::get_discrete(vector<double>& distribution){
+  //values should be non-negative sum of values of distribution should be ~=1
+  //probability of i is distribution[i] i<distribution.size()
+  //if sum!=1, the  probablility of the last value is modified
+  double rand_val = get();
+  double sum = 0;
+  int random_index=0;
+  for(;random_index<(int)distribution.size()-1;random_index++){
+    sum+=distribution[random_index];
+    if (sum>rand_val) break;
+  }
+  return random_index;
+}

@@ -1,10 +1,11 @@
+
 class ObjectivePointWise{
   %TypeHeaderCode
   #include "objectives/Objective.h"
   %End
   public:
-    ObjectivePointWise();
-    virtual double get_gradient(RecPred * rec_pred) = 0;
+    virtual ~ObjectivePointWise();
+    virtual double get_gradient(RecPred* rec_pred)=0;
 };
 
 class ObjectivePairWise /Abstract/{
@@ -12,8 +13,8 @@ class ObjectivePairWise /Abstract/{
   #include "objectives/Objective.h"
   %End
   public:
-    ObjectivePairWise(); 
-    // virtual std::pair<double,double> get_gradient(RecPred * rec_pred1, RecPred* rec_pred2)=0;
+    virtual ~ObjectivePairWise();
+//    virtual pair<double,double> get_gradient(RecPred* rec_pred1, RecPred* rec_pred2)=0;
 };
 
 class ObjectiveListWise{
@@ -21,6 +22,7 @@ class ObjectiveListWise{
   #include "objectives/Objective.h"
   %End
   public:
-    ObjectiveListWise();
-    virtual std::vector <double>  get_gradient(std::vector <RecPred> * predictions)=0;
+    virtual ~ObjectiveListWise();
+    virtual std::vector<double>  get_gradient(std::vector<RecPred>* predictions)=0;
 };
+

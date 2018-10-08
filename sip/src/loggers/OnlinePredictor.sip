@@ -1,3 +1,4 @@
+
 struct OnlinePredictorParameters{
   %TypeHeaderCode
   #include "loggers/OnlinePredictor.h"
@@ -7,15 +8,14 @@ struct OnlinePredictorParameters{
   std::string file_name;
 };
 
-
 class OnlinePredictor : public Logger /NoDefaultCtors/{
   %TypeHeaderCode
   #include "loggers/OnlinePredictor.h"
   %End
-  public:
-    OnlinePredictor(OnlinePredictorParameters* params);
-    ~OnlinePredictor();
-    void run(RecDat* rec_dat);
-    void set_prediction_creator(PredictionCreator* prediction_creator);
-    bool self_test();
+ public:
+   OnlinePredictor(OnlinePredictorParameters* params);
+   void run(RecDat* rec_dat);
+   void set_prediction_creator(PredictionCreator* prediction_creator);
+   bool self_test();
 };
+

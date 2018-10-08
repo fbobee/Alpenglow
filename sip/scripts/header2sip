@@ -1,0 +1,196 @@
+#!/bin/bash
+if [ "$#" -eq 0 ]
+then
+  echo "Usage:"
+  echo "header2sip filename [overwrite]"
+  echo "Convert c++ header to sip file and write to the standard output. If overwrite is set, the appropriate sip file will be (over)written instead of writing to the standard output."
+  echo
+  echo "header2sip filename compare"
+  echo "Convert c++ header to sip file and compare side-to-side with the appropriate sip file. The diff will be written to the standard output."
+  echo
+  echo "header2sip directory [compare|overwrite]"
+  echo "Find all c++ header files (.h files) in the directory and convert them. If overwrite is set, the appropriate sip file[s] will be (over)written and containing dirs will be created if needed instead of writing to the standard output."
+  echo
+  echo "header2sip directory autoconvert"
+  echo "Find all files in the directory that contain the string "SIP_AUTOCONVERT" and convert them (over)writing the appropriate sip files."
+  echo
+  echo "header2sip"
+  echo "Show this help and exit."
+  exit
+fi
+if [ "$#" -ge 1 ]
+then
+  if [ -f $1 ]
+  then
+    mode="file"
+  else if [ -d $1 ]
+  then
+    mode="dir"
+  else
+    echo "The first parameter must be a file or a directory."
+    exit 1
+  fi; fi
+fi
+compare="no"
+overwrite="no"
+if [ "$#" -ge 2 ]
+then
+  if [ "$2" == "overwrite" ]
+  then
+    overwrite="yes"
+  else if [ "$2" == "compare" ]
+  then
+    compare="yes"
+  else if [ "$2" == "autoconvert" ]
+  then
+    mode="autoconvert"
+    overwrite="yes"
+  else
+    echo "The second parameter must be 'overwrite', 'compare' or 'autoconvert' if given."
+    echo "Run without parameters for help."
+    exit 1
+  fi; fi; fi
+fi
+
+script_dir=$(dirname $0)
+tempfile=$(mktemp)
+
+if [ $mode = "file" ]
+then
+  file_name_list="$1"
+else if [ $mode = "dir" ]
+then
+  file_name_list=$(find $1 -name "*.h")
+else #mode=autoconvert
+  file_name_list=$(grep -rl "SIP_AUTOCONVERT" $1)
+fi; fi
+
+echo "Input files:"
+echo "$file_name_list"
+
+for file in $file_name_list
+do
+  echo "Processing file $file"
+  local_file_path=$(echo $file | sed -r "s|.*main/||")
+  cat $file \
+  | python $script_dir/sipdoc.py \
+  | python $script_dir/sipcode.py \
+  | sed "s|//SIP_AUTOCONVERT.*||" \
+  | vim -E +'%s/\v\/\/(SIP_)@!.*//' +%p -cq! /dev/stdin \
+  | sed -r "s|\{[[:space:]]*//SIP_ABSTRACT| /Abstract/{|" \
+  | sed -r "s|\{[[:space:]]*//SIP_NODEFAULTCTORS| /NoDefaultCtors/{|" \
+  | sed "s/#include.*//" \
+  | sed "s/#ifndef.*//" \
+  | sed "s/#endif.*//" \
+  | sed "s/#define.*//" \
+  | sed "s/using.*//" \
+  | sed -r "s/^\s*class([^{]*);//g" \
+  | sed -r "s/^\s*struct([^{]*);//g" \
+  | sed '/^\s*friend class.*$/d' \
+  | sed '/^\s*FRIEND_TEST.*$/d' \
+  | python $script_dir/remove_initlist.py \
+  | vim -E +"%normal t(f{d%a;" +%p -cq! /dev/stdin \
+  | tr -d "\a" \
+  | sed -r "s/^([^)]+)[[:space:]]*=[^;]*;/\1;/" \
+  | python $script_dir/remove_private.py \
+  | tr '\n' '\r' \
+  | sed -r "s/struct([^{]*)\{/struct\1{\nTYPEHEADERCODE/g" \
+  | sed -r "s/class([^{]*)\{/class\1{\nTYPEHEADERCODE/g" \
+  | sed -r "s/class([^{]*public RankingScoreIterator([^A-Z][^{]*)?)\{/COMMENTOUTTHISCLASS class\1{/g" \
+  | sed -r "s/(enum[[:space:]]+class)/COMMENTOUTTHISCLASS\1/g" \
+  | tr '\r' '\n'\
+  | sed -r "s|TYPEHEADERCODE|  %TypeHeaderCode\n  #include \"$local_file_path\"\n  %End|g" \
+  | sed -r "s/([([:space:]])string/\1std::string/g" \
+  | sed -r "s/([([:space:]])vector</\1std::vector</g" \
+  | sed -r "s|^(.*RankingScoreIterator)|//\1|" \
+  | sed -r "s|^(.*UpdaterMessage)|//\1|" \
+  | sed -r "s|^(.*stream)|//\1|" \
+  | sed -r "s|^(.*pair<)|//\1|" \
+  | sed -r "s|^(.*map<)|//\1|" \
+  | sed -r "s|^([[:space:]]*typedef)|//\1|" \
+  | sed -r "s/^(.*\(.*\))\s*override\s*;/\1;/g"\
+  | python $script_dir/comment_labeled_classes.py \
+  | sed "s/COMMENTOUTTHISCLASS//g" \
+  | sed "s|///*|//|g" \
+  | sed 's/^\s*$//' \
+  | cat -s \
+  | sed -r "s/[[:space:]]*;([[:space:]]*;)*/;/" > $tempfile
+
+  sipfilename=$(echo $file | sed -r "s/cpp/sip/" | sed -r "s|main/||" | sed "s/.h$/.sip/")
+  if [ $overwrite = "yes" ]
+  then
+    mkdir -p $(dirname $sipfilename)
+    cp $tempfile $sipfilename
+  else if [ $compare = "yes" ]
+  then
+    diff --side-by-side $tempfile $sipfilename
+  else
+    cat $tempfile
+  fi; fi
+done
+
+rm $tempfile
+
+exit 0
+
+
+#documentation
+# remove // comments (do not remove //SIP_ comments)
+# remove //SIP_AUTOCONVERT
+# //SIP_ABSTRACT -> /Abstract/
+# //SIP_NODEFAULTCTORS -> /NoDefaultCtors/
+# remove macros
+# remove using...
+# remove empty lines
+# remove forward class declarations
+# remove forward struct declarations
+# remove friend class declarations
+# remove friend test declarations
+# remove initialization lists
+# remove function definitions
+# remove bell characters inserted by vim
+# remove initial field values (e.g. int x = -1; )
+# remove private and protected parts (except override functions)
+# prepare for anchestors listed in multiple lines
+# insert typeheadercode into structs
+# insert typeheadercode into classes
+# comment label to RSI classes
+# comment label to enum class
+# (undo) prepare for anchestors listed in multiple lines
+# TYPEHEADERCODE -> real code
+# string -> std::string (fails on std:: string)
+# vector -> std::vector (fails on std:: vector)
+# UpdaterMessage: comment out
+# iofstream: comment out
+# pair template: comment out
+# comment out typedefs
+# remove functions that use c++ streams - that are not sip compatible yet
+# remove override keywords
+# comment labeled classes
+# remove comment label
+# /** doc */ -> sipdoc
+# remove extra ///////
+# remove extra spaces before ; and extra ;-s
+
+#TODO
+#Filters: comment out some functions
+#filename blacklist (list of regex, leave out matching files)
+#RandomChoosingCombinedModelExpertUpdater: brackets after constructor
+
+#generate all during compilation <- first step: sync existing and generated files
+# OK data_generators
+# TODO filters //remove extra functions, add extra sip code
+# TODO general_interfaces //add extra sip code, import documentation
+# ok gradient_computers
+# ok loggers
+# TODO models 
+# TODO negative_sample_generators
+# TODO objectives
+# TODO offline_evaluators
+# TODO offline_learners
+# TODO online_experiment
+# TODO online_learners
+# TODO ranking
+# TODO recommender_data
+# TODO statistics
+# TODO utils

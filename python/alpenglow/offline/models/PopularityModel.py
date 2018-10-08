@@ -13,11 +13,11 @@ class PopularityModel(alpenglow.offline.OfflineModel):
         updater = rs.PopularityModelUpdater()
         updater.set_model(model)
 
-        learner = rs.OfflineIteratingLearner(**self.parameter_defaults(
-            seed=67439852,
-        ))
-        learner.set_model(model)
-        learner.add_simple_updater(updater)
-        learner.set_recommender_data(recommender_data)
+        learner = rs.OfflineIteratingOnlineLearnerWrapper(
+            seed=0,
+            number_of_iterations=0,
+            shuffle=False,
+        )
+        learner.add_updater(updater)
 
         return (model, learner)

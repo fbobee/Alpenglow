@@ -1,12 +1,12 @@
 #ifndef OFFLINE_LEARNER
 #define OFFLINE_LEARNER
 
-#include "../models/Model.h"
+#include "../recommender_data/RecommenderData.h"
 
 class OfflineLearner{
  public:
-  OfflineLearner(){}; 
-  virtual void iterate()=0;
+  virtual ~OfflineLearner(){} 
+  virtual void fit(RecommenderData* recommender_data)=0;
   bool self_test(){
     bool OK = true;
     return OK;

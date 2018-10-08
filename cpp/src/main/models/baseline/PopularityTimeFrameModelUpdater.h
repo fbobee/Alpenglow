@@ -1,6 +1,8 @@
 #ifndef POPULARITY_TIMEFRAME_UPDATER
 #define POPULARITY_TIMEFRAME_UPDATER
 
+//SIP_AUTOCONVERT
+
 #include <queue>
 #include <vector>
 #include "../ModelUpdater.h"
@@ -14,7 +16,7 @@ struct PopularityTimeFrameModelUpdaterParameters{
     tau=-1;
   }
 };
-class PopularityTimeFrameModelUpdater : public ModelSimpleUpdater {
+class PopularityTimeFrameModelUpdater : public Updater {
   public:
     PopularityTimeFrameModelUpdater(PopularityTimeFrameModelUpdaterParameters* params){
       tau_ = params->tau;
@@ -23,7 +25,7 @@ class PopularityTimeFrameModelUpdater : public ModelSimpleUpdater {
     void set_model(PopularityModel* model){model_ = model;};
     void update(RecDat* rec_dat) override;
     bool self_test(){
-      bool ok = ModelSimpleUpdater::self_test();
+      bool ok = Updater::self_test();
       if (model_==NULL) ok=false;
       if (tau_<0) ok=false;
       return ok;

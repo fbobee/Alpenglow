@@ -1,3 +1,4 @@
+
 struct ListConditionalMetaLoggerParameters{
   %TypeHeaderCode
   #include "loggers/ListConditionalMetaLogger.h"
@@ -13,3 +14,4 @@ class ListConditionalMetaLogger : public ConditionalMetaLogger{
     ListConditionalMetaLogger(ListConditionalMetaLoggerParameters* parameters);
     virtual bool should_run(RecDat* recDat);
 };
+

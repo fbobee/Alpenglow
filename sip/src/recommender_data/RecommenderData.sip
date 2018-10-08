@@ -22,13 +22,6 @@ struct RecDat{
 //  Location location;
 };
 
-struct RecommenderDataParameters{
-  %TypeHeaderCode
-  #include "recommender_data/RecommenderData.h"
-  %End
-  std::string file_name;
-  std::string type;
-};
 
 struct RecPred{
   %TypeHeaderCode
@@ -43,30 +36,48 @@ class RecommenderData : public Initializable{
   #include "recommender_data/RecommenderData.h"
   %End
   public:
-    RecommenderData();
-    RecommenderData(RecommenderDataParameters* params);
     ~RecommenderData();
-    void read_from_file(std::string file_name, std::string type);
-    void set_rec_dats(std::vector <RecDat> rec_data);
+    void set_rec_data(std::vector <RecDat> rec_data);
     RecDat* get(int idx);
     int size();
-    SpMatrix* matrix();
-    std::vector<int>* items();
-    std::vector<int>* users();
+    SpMatrix* get_full_matrix();
+    std::vector<int>* get_all_items();
+    std::vector<int>* get_all_users();
+    void clear();
 
 
     void get_items_into(VectorInt*);
     %MethodCode
-        a0->vec = *(sipCpp->items());
+        a0->vec = *(sipCpp->get_all_items());
     %End
 
     void get_users_into(VectorInt*);
     %MethodCode
-        a0->vec = *(sipCpp->users());
+        a0->vec = *(sipCpp->get_all_users());
     %End
 
-    void set_max_time(double _max_time);
     std::vector <RecDat>* get_rec_data();
+  protected:
+    bool autocalled_initialize();
+};
+
+struct LegacyRecommenderDataParameters{
+  %TypeHeaderCode
+  #include "recommender_data/RecommenderData.h"
+  %End
+  std::string file_name;
+  std::string type;
+  int max_time;
+};
+
+class LegacyRecommenderData : public RecommenderData {
+  %TypeHeaderCode
+  #include "recommender_data/RecommenderData.h"
+  %End
+  public:
+    LegacyRecommenderData();
+    LegacyRecommenderData(LegacyRecommenderDataParameters* params);
+    void read_from_file(std::string file_name, std::string type);
     void set_attribute_container(InlineAttributeReader* attribute_container);
   protected:
     bool autocalled_initialize();

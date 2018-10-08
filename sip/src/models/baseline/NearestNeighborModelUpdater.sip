@@ -1,3 +1,4 @@
+
 struct NearestNeighborModelUpdaterParameters {
   %TypeHeaderCode
   #include "models/baseline/NearestNeighborModelUpdater.h"
@@ -6,12 +7,15 @@ struct NearestNeighborModelUpdaterParameters {
   std::string period_mode;
   NearestNeighborModelUpdaterParameters();
 };
-
-class NearestNeighborModelUpdater : public ModelSimpleUpdater {
-  public:
+class NearestNeighborModelUpdater : public Updater {
+  %TypeHeaderCode
+  #include "models/baseline/NearestNeighborModelUpdater.h"
+  %End
+public:
   NearestNeighborModelUpdater(NearestNeighborModelUpdaterParameters* params);
   void update(RecDat* rec_dat);
-  void end_of_updating(RecDat*);
+//  void message(UpdaterMessage message);
   void set_model(NearestNeighborModel* model);
   bool self_test();
 };
+

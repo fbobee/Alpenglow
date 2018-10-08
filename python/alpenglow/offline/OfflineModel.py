@@ -56,7 +56,7 @@ class OfflineModel(ParameterDefaults):
 
         recommender_data = DataframeData(data, columns=columns)
 
-        matrix = recommender_data.matrix()
+        matrix = recommender_data.get_full_matrix()
         users = rs.VectorInt([])
         items = rs.VectorInt([])
         recommender_data.get_users_into(users)
@@ -70,7 +70,7 @@ class OfflineModel(ParameterDefaults):
             rs.run_self_test(i)
         self.check_unused_parameters()
 
-        learner.iterate()
+        learner.fit(recommender_data)
 
         self.objects = created_objects
         self.model = model

@@ -1,6 +1,8 @@
 #ifndef POPULARITY_UPDATER
 #define POPULARITY_UPDATER
 
+//SIP_AUTOCONVERT
+
 #include <vector>
 #include "../ModelUpdater.h"
 #include "PopularityModel.h"
@@ -8,7 +10,7 @@
 
 using namespace std;
 
-class PopularityModelUpdater : public ModelSimpleUpdater {
+class PopularityModelUpdater : public Updater {
   public:
     PopularityModelUpdater(){
       model_ = NULL;
@@ -16,7 +18,7 @@ class PopularityModelUpdater : public ModelSimpleUpdater {
     void set_model(PopularityModel* model){model_ = model;}
     void update(RecDat* rec_dat) override;
     bool self_test(){
-      bool ok = ModelSimpleUpdater::self_test();
+      bool ok = Updater::self_test();
       if(model_==NULL){ ok=false; }
       return ok;
     }

@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <numeric>
 #include "Logger.h"
-#include "../general_interfaces/INeedExperimentEnvironment.h"
+#include "../general_interfaces/NeedsExperimentEnvironment.h"
 #include "../models/baseline/TransitionProbabilityModel.h"
 #include "../utils/PopContainers.h"
 using namespace std;
@@ -20,7 +20,7 @@ struct TransitionModelLoggerParameters{
     period_length=-1;
   }
 };
-class TransitionModelLogger : public Logger, public INeedExperimentEnvironment, public Initializable{
+class TransitionModelLogger : public Logger, public NeedsExperimentEnvironment, public Initializable{
   public:
     TransitionModelLogger(TransitionModelLoggerParameters* params):
       period_length_(params->period_length)
@@ -106,7 +106,7 @@ class TransitionModelLogger : public Logger, public INeedExperimentEnvironment, 
     void write_toplist_lengths(RecDat* rec_dat){
       string filename=toplist_length_logfile_basename_+"_"+to_string(last_period_num_);
       ofstream ofs(filename.c_str());
-      for(int item=0;item<model_->transition_frequencies_.size();item++){
+      for(uint item=0;item<model_->transition_frequencies_.size();item++){
         int out_degree = model_->transition_frequencies_[item].size();
         //int popularity = pop_container_->get(item);
         ofs << item << " " << out_degree;// << " " << popularity;

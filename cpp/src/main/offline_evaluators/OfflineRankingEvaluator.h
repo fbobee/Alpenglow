@@ -7,7 +7,7 @@
 #include "../utils/PredictionCreator.h"
 
 using namespace std;
-struct OfflineRankingEvaluatorParameters{ //TODO jinjactor
+struct OfflineRankingEvaluatorParameters{
   string test_file_name;
   string test_file_type;
   string output_file_name;
@@ -23,9 +23,9 @@ class OfflineRankingEvaluator : public OfflineEvaluator{
       toplist_creator_ = NULL;
     }
     virtual void evaluate(){
-      RecommenderData test_data;
+      LegacyRecommenderData test_data;
       test_data.read_from_file(test_file_name_, test_file_type_);
-      vector<USER>* users = test_data.users();
+      vector<USER>* users = test_data.get_all_users();
       cerr << "Number of test users: " << users->size() << endl;
       int user_counter = 0;
       for(auto user : *users){

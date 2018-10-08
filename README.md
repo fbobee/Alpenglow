@@ -16,8 +16,10 @@ Lorem ipsum.
 
 ### Installation from source (linux only at the moment)
 - `cd Alpenglow`
-- `conda install libgcc`
+- `conda install libgcc sip`
+- `conda install -c conda-forge eigen`
 - `pip install .`
+
 
 ### Getting Started
 
@@ -46,6 +48,7 @@ day = 86400
 averages = rankings['dcg'].groupby((rankings['time']-rankings['time'].min())//day).mean()
 plt.plot(averages)
 ```
+- Online documentation: https://alpenglow.readthedocs.io/en/latest/
 
 ### Development
 - For faster recompilation, use `export CC="ccache cc"`

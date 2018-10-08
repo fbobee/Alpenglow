@@ -43,7 +43,21 @@ class OnlineExperiment(ParameterDefaults):
         if("top_k" not in self.parameters):
             self.parameters["top_k"] = 100
 
-    def run(self, data, experimentType=None, columns={}, verbose=True, out_file=None, exclude_known=False, initialize_all=False, max_item=-1, max_user=-1, calculate_toplists=False):
+    def run(self,
+        data,
+        experimentType=None,
+        columns={},
+        verbose=True,
+        out_file=None,
+        exclude_known=False,
+        initialize_all=False,
+        max_item=-1,
+        max_user=-1,
+        calculate_toplists=False,
+        max_time=0,
+        memory_log=True,
+        shuffle_same_time=True
+        ):
         """
         Parameters
         ----------
@@ -51,45 +65,50 @@ class OnlineExperiment(ParameterDefaults):
             The input data, see :doc:`/getting_started/3-five_minute_tutorial`. If this parameter is a string, it has to be in the format specified by :code:`experimentType`.
         experimentType : str
             The format of the input file if :code:`data` is a string
-        columns: dict
+        columns : dict
             Optionally the mapping of the input DataFrame's columns' names to the expected ones.
-        verbose: bool
+        verbose : bool
             Whether to write information about the experiment while running
-        out_file: str
+        out_file : str
             If set, the results of the experiment are also written to the file located at :code:`out_file`.
-        exclude_known: bool
+        exclude_known : bool
             If set to True, a user's previosly seen items are excluded from the toplist evaluation. The :code:`eval` columns of the input data should be set accordingly.
         calculate_toplists: bool or list
-            Whether to actually compute the toplists or just the ranks (the latter is faster). It can be specified on a record-by-record basis, by giving a list of booleans as parameter. The calculated toplists can be acquired after the experiment's end by using :code:`get_predictions`.
-
-
+            Whether to actually compute the toplists or just the ranks (the latter is faster). It can be specified on a record-by-record basis, by giving a list of booleans as parameter. The calculated toplists can be acquired after the experiment's end by using :code:`get_predictions`. Setting this to non-False implies shuffle_same_time=False
+        max_time : int
+            Stop the experiment at this timestamp.
+        memory_log : bool
+            Whether to log the results to memory (to be used optionally with out_file)
+        shuffle_same_time : bool
+            Whether to shuffle records with the same timestamp randomly.
 
         Returns
         -------
-        bool
-          Description of return value
+        DataFrame
+          Results DataFrame if memory_log=True, empty DataFrame otherwise
 
         """
         rs.collect()
         self.verbose = verbose
         min_time = 0
-        max_time = 0
 
-        print("reading data...") if self.verbose else None
-
+        # reading data
         if not isinstance(data, str):
             recommender_data = DataframeData(data, columns=columns)
         else:
-            recommender_data = rs.RecommenderData(
+            recommender_data = rs.LegacyRecommenderData(
                 file_name=data,
-                type=experimentType
+                type=experimentType,
+                max_time=max_time
             )
-            recommender_data.set_max_time(max_time)
         # TODO set max_item, max_user here
-        recommender_data_iterator = rs.ShuffleIterator(seed=self.parameters["seed"])
+        recommender_data_iterator = None
+        if not shuffle_same_time or calculate_toplists is not False:
+            recommender_data_iterator = rs.SimpleIterator()
+        else:
+            recommender_data_iterator = rs.ShuffleIterator(seed=self.parameters["seed"])
         recommender_data_iterator.set_recommender_data(recommender_data)
-
-        print("data reading finished") if self.verbose else None
+        # data reading finished
 
         top_k = self.parameters['top_k']
         seed = self.parameters["seed"]
@@ -171,7 +190,7 @@ class OnlineExperiment(ParameterDefaults):
             proceeding_logger.set_data_iterator(recommender_data_iterator)
             online_experiment.add_logger(proceeding_logger)
 
-        ranking_logger = self._get_ranking_logger(top_k, min_time, self.parameter_default('out_file', out_file))
+        ranking_logger = self._get_ranking_logger(top_k, min_time, self.parameter_default('out_file', out_file), memory_log)
         ranking_logger.set_model(model)
         ranking_logger.set_rank_computer(rank_computer)
 
@@ -214,19 +233,23 @@ class OnlineExperiment(ParameterDefaults):
                 'item': preds.items,
                 'rank': preds.ranks,
                 'prediction': preds.scores,
-            }).sort_values(['time', 'user','rank'])[['record_id', 'time', 'user', 'item', 'rank', 'prediction']]
+            }).sort_values(['record_id'])[['record_id', 'time', 'user', 'item', 'rank', 'prediction']]
             return preds_df
         else:
             return None
 
-    def _get_ranking_logger(self, top_k, min_time, out_file):
+    def _get_ranking_logger(self, top_k, min_time, out_file, memory_log):
         if out_file is None:
             out_file = ""
         else:
             print("logging to file " + out_file) if self.verbose else None
         self.ranking_logs = rs.RankingLogs()
         self.ranking_logs.top_k = top_k
-        self.ranking_logger = rs.MemoryRankingLogger(min_time=min_time, out_file=out_file)
+        self.ranking_logger = rs.MemoryRankingLogger(
+            min_time=min_time,
+            out_file=out_file,
+            memory_log=memory_log
+        )
         self.ranking_logger.set_ranking_logs(self.ranking_logs)
         return self.ranking_logger
 

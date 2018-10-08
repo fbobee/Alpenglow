@@ -1,36 +1,47 @@
 #ifndef RANDOM_ITERATOR
 #define RANDOM_ITERATOR
+
+//SIP_AUTOCONVERT
+
+#include <string>
+#include <exception>
 #include "RecommenderData.h"
+#include "RecommenderDataIterator.h"
 #include "../utils/Random.h"
 
-class RandomIterator{
+struct RandomIteratorParameters{
+  int seed;
+  string shuffle_mode = "auto_shuffle";
+};
+class RandomIterator : public RecommenderDataIterator {
   public:
-    RandomIterator(RecommenderData* recommender_data, int seed){
-      shuffled_data_.resize(recommender_data->size());
-      for(int i=0;i<recommender_data->size();i++){
-        shuffled_data_[i]=recommender_data->get(i);
-      }
+    RandomIterator(RecommenderData* recommender_data, int seed, string shuffle_mode){
+      recommender_data_ = recommender_data;
       random_.set(seed);
-      counter_=0;
-    };
-    void shuffle(){
-      counter_=0;
-      random_shuffle(shuffled_data_.begin(),shuffled_data_.end(),random_);
-    };
-    RecDat* next(){
-      return shuffled_data_[counter_++];
-    };
-    bool has_next(){
-      return counter_ < shuffled_data_.size();
-    };
-    bool restart(){
-      counter_ = 0;
-      return true;
-    };
+      shuffle_mode_ = shuffle_mode;
+      if (!initialize()){
+        cerr << "RandomIterator: initialization was no successful." << endl;
+        throw 0;
+      }
+    }
+    RandomIterator(RandomIteratorParameters* params){
+      random_.set(params->seed);
+      shuffle_mode_=params->shuffle_mode;
+    }
+    RecDat* next();
+    void restart();
+    void shuffle();
+    RecDat* get_actual();
+    RecDat* get(int index) const;
+    RecDat* get_future(int index) const;
+    double get_following_timestamp() const;
   private:
     Random random_;
     vector<RecDat*> shuffled_data_;
-    uint counter_;
+    string shuffle_mode_ = "auto_shuffle"; //auto_shuffle or manual_shuffle
+
+    bool autocalled_initialize() override;
+    bool parent_is_initialized_ = false;
 };
 
 

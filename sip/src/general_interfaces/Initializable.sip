@@ -1,3 +1,4 @@
+
 class Initializable {
   %TypeHeaderCode
   #include "general_interfaces/Initializable.h"
@@ -11,29 +12,30 @@ class Initializable {
     In that case Child has to override :py:meth:`autocalled_initialize()`, and call `Parent::autocalled_initialize()` in the overriding function first, continuing only if the parent returned true.
     If the init of the parent was succesful, but the children failed, then the children has to store the success of the parent and omit calling the initialization of the parent later.
   %End
-  public:
-    bool is_initialized();
-    %Docstring
+public:
+  bool is_initialized();
+  %Docstring
       Returns
       -------
       bool
           Whether the component has already been initialized.
-    %End
-    bool initialize();
-    %Docstring
+  %End
+  bool initialize();
+  %Docstring
       Returns
       -------
       bool
           Whether the initialization was successful.
-    %End
+  %End
   protected:
-    virtual bool autocalled_initialize()=0;
-    %Docstring
+  virtual bool autocalled_initialize()=0;
+  %Docstring
       Has to be implemented by the component.
 
       Returns
       -------
       bool
           Whether the initialization was successful.
-    %End
+  %End
 };
+

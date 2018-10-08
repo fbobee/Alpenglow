@@ -318,6 +318,18 @@ TEST_F(TestNearestNeighborModel, both2){
   //  }
   //}
 
+  vector<int> users = {20, 21};
+  for (auto user : users){
+    auto rsi = model.get_ranking_score_iterator(user);
+    map<int,int> rsi_items;
+    while(rsi->has_next()){
+      int item;
+      double score;
+      tie(item,score) = rsi->get_next();
+      EXPECT_EQ(0,rsi_items[item]); //each items should occur only once in the iterator
+      rsi_items[item]=1;
+    }
+  }
 }
 
 TEST_F(TestNearestNeighborModel, offline){
@@ -334,7 +346,7 @@ TEST_F(TestNearestNeighborModel, offline){
   NearestNeighborModelUpdater updater(&updater_params);
   updater.set_model(&model);
   EXPECT_TRUE(updater.self_test());
-  updater.start_of_updating(NULL);
+  updater.message(UpdaterMessage::start_of_offline_update);
 
   updater.update(create_recdat_p(10,20,30,1));
   updater.update(create_recdat_p(11,20,31,1));
@@ -354,7 +366,7 @@ TEST_F(TestNearestNeighborModel, offline){
       EXPECT_DOUBLE_EQ(0.0,model.prediction(create_recdat_p(20,user,item,1)));
     }
   }
-  updater.end_of_updating(NULL);
+  updater.message(UpdaterMessage::end_of_offline_update);
 
   EXPECT_DOUBLE_EQ(2,model.prediction(create_recdat_p(24,21,31,1)));
   EXPECT_DOUBLE_EQ(2,model.prediction(create_recdat_p(24,21,32,1)));
