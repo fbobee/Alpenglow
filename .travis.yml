@@ -18,8 +18,12 @@ install:
   - source activate test-environment
   - conda install -c conda-forge eigen
   - pip install .
+  - which -a python
+  - which -a pip
   - pip list
 
 script:
+  - which -a python
+  - which -a pip
   - pip list
   - pytest
