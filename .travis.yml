@@ -19,7 +19,7 @@ install:
   - conda install -c conda-forge eigen
   - pip install -e .
   - pwd
-  - export PYTHONPATH="$HOME/Alpenglow/python:$PYTHONPATH"
+  - export PYTHONPATH="$(pwd)/python:$PYTHONPATH"
   - which -a python
   - which -a pip
   - pip list
