@@ -18,8 +18,8 @@ install:
   - source activate test-environment
   - conda install -c conda-forge eigen
   - pip install .
-  - pip install --upgrade --force-reinstall --no-deps -e .
-  - export PYTHONPATH="$HOME/python:$PYTHONPATH"
+  - pip list
 
 script:
+  - pip list
   - pytest
