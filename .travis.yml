@@ -17,16 +17,20 @@ install:
   #- conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION dep1 dep2 ...
   - source activate test-environment
   - conda install -c conda-forge eigen
-  - pip install -e .
-  - pwd
-  - export PYTHONPATH="$(pwd)/python:$PYTHONPATH"
+  - pip install .
+  #- pwd
+  #- export PYTHONPATH="$(pwd)/python:$PYTHONPATH"
   - which -a python
   - which -a pip
-  - pip list
+  - which -a pytest
+  - pip install pytest
+  - which -a pytest
+  #- pip list
 
 script:
-  - pwd
+  #- pwd
   - which -a python
   - which -a pip
-  - pip list
+  - which -a pytest
+  #- pip list
   - pytest
