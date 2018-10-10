@@ -1,6 +1,7 @@
 <p align="center">
   <img src="./misc/alpenglow.png" alt="alpenglow"/>
 </p>
+
 [![Build Status](https://travis-ci.com/fbobee/Alpenglow.svg?branch=master)](https://travis-ci.com/fbobee/Alpenglow)
 
 - Alpenglow is a free and open source C++ framework with easy-to-use Python API.
