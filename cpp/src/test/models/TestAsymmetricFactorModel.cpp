@@ -65,7 +65,6 @@ TEST_F(TestAsymmetricFactorModel, test){
   simple_updater.set_model(&model);
   gradient_updater.set_model(&model);
 
-  EXPECT_TRUE(1==2);
   EXPECT_TRUE(model.self_test());
   EXPECT_TRUE(simple_updater.self_test());
   EXPECT_TRUE(gradient_updater.self_test());
