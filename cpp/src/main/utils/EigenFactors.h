@@ -1,8 +1,8 @@
 #ifndef EIGEN_FACTORS_H
 #define EIGEN_FACTORS_H
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 #include <iostream>
 #include <math.h>
 #include <vector>
@@ -18,7 +18,7 @@ using namespace Eigen;
 
 typedef Matrix<double, Dynamic, Dynamic, RowMajor> MatrixXdRM;
 
-struct EigenFactorsParameters{
+struct EigenFactorsParameters {
   int seed;
 };
 
@@ -31,15 +31,18 @@ class EigenFactors{
     void write(ostream& file);
     void read(istream& file);
     void set_parameters(EigenFactorsParameters *parameters){
-      seed = parameters->seed;
-      rnd = Random(seed);
+      seed_ = parameters->seed;
+      random_ = Random(seed_);
     }
     void reinitialize_factors(int dimension, int users, double begin_min_, double begin_max_);
     void resize(int dimension, int users, double begin_min_, double begin_max_);
     MatrixXdRM factors;
     vector<bool> seen;
+    bool self_test(){
+      return random_.self_test();
+    }
   private:
-    Random rnd;
-    int seed;
+    Random random_;
+    int seed_;
 };
-#endif
+#endif /* EIGEN_FACTORS_H */

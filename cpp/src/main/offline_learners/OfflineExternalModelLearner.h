@@ -1,13 +1,14 @@
-#ifndef OFFLINE_EXTERNAL_MODEL_LEARNER_PARAMETERS_H
-#define OFFLINE_EXTERNAL_MODEL_LEARNER_PARAMETERS_H
+#ifndef OFFLINE_EXTERNAL_MODEL_LEARNER_H
+#define OFFLINE_EXTERNAL_MODEL_LEARNER_H
 
 #include "OfflineLearner.h"
 #include "../models/ExternalModel.h"
+#include <stdexcept>
 #include <gtest/gtest_prod.h>
 
 using namespace std;
 
-struct OfflineExternalModelLearnerParameters{
+struct OfflineExternalModelLearnerParameters {
   string mode;
   string out_name_base;
   string in_name_base;
@@ -30,4 +31,4 @@ class OfflineExternalModelLearner : public OfflineLearner{
     int call_number_=1;
 };
 
-#endif
+#endif /* OFFLINE_EXTERNAL_MODEL_LEARNER_H */

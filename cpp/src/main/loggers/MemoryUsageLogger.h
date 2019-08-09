@@ -1,5 +1,7 @@
-#ifndef MEMORY_USAGE_LOGGER
-#define MEMORY_USAGE_LOGGER
+#ifndef MEMORY_USAGE_LOGGER_H
+#define MEMORY_USAGE_LOGGER_H
+
+//SIP_AUTOCONVERT
 
 #include <sys/resource.h>
 #include <iostream>
@@ -11,10 +13,6 @@ using namespace std;
 
 class MemoryUsageLogger : public Logger, public Initializable, public NeedsExperimentEnvironment{
   public:
-    MemoryUsageLogger(){
-      recommender_data_iterator_=NULL;
-    }
-    virtual ~MemoryUsageLogger(){}
     void run(RecDat* rec_dat) override {
       int counter = recommender_data_iterator_->get_counter();
       if(counter % frequency_ == 0 or counter == size_-1){
@@ -22,9 +20,6 @@ class MemoryUsageLogger : public Logger, public Initializable, public NeedsExper
         getrusage(RUSAGE_SELF, &usage);
         cerr << "mem usage: " << usage.ru_maxrss << endl;
       }
-    }
-    void set_experiment_environment(ExperimentEnvironment* experiment_environment) override {
-      experiment_environment_=experiment_environment;
     }
     void set_data_iterator(RecommenderDataIterator* recommender_data_iterator){
       recommender_data_iterator_ = recommender_data_iterator;
@@ -36,7 +31,10 @@ class MemoryUsageLogger : public Logger, public Initializable, public NeedsExper
     }
   protected:
     bool autocalled_initialize() override {
-      if(recommender_data_iterator_==NULL){ recommender_data_iterator_=experiment_environment_->get_recommender_data_iterator(); }
+      if(recommender_data_iterator_==NULL){ 
+        if (experiment_environment_ == NULL) return false;
+        recommender_data_iterator_=experiment_environment_->get_recommender_data_iterator();
+      }
       if(!recommender_data_iterator_->is_initialized()){
         return false;
       }
@@ -45,10 +43,9 @@ class MemoryUsageLogger : public Logger, public Initializable, public NeedsExper
       return true;
     }
   private:
-    ExperimentEnvironment* experiment_environment_;
-    RecommenderDataIterator* recommender_data_iterator_;
+    const RecommenderDataIterator* recommender_data_iterator_ = NULL;
     int frequency_;
     int size_;
 };
 
-#endif
+#endif /* MEMORY_USAGE_LOGGER_H */

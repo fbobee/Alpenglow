@@ -1,5 +1,5 @@
-#ifndef LIST_CONDITIONAL_META_LOGGER
-#define LIST_CONDITIONAL_META_LOGGER
+#ifndef LIST_CONDITIONAL_META_LOGGER_H
+#define LIST_CONDITIONAL_META_LOGGER_H
 
 //SIP_AUTOCONVERT
 
@@ -8,7 +8,7 @@
 
 using namespace std;
 
-struct ListConditionalMetaLoggerParameters{
+struct ListConditionalMetaLoggerParameters {
   vector<int> should_run_vector;
 };
 
@@ -17,10 +17,10 @@ class ListConditionalMetaLogger : public ConditionalMetaLogger{
     ListConditionalMetaLogger(ListConditionalMetaLoggerParameters* parameters){
       should_run_vector_ = parameters->should_run_vector;
     }
-    virtual bool should_run(RecDat* recDat);
+    virtual bool should_run(RecDat* recDat) override;
   protected:
     vector<int> should_run_vector_;
     int position=0;
 };
 
-#endif
+#endif /* LIST_CONDITIONAL_META_LOGGER_H */

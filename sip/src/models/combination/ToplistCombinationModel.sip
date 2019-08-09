@@ -11,6 +11,13 @@
 //  int unique_items_num();
 //};
 
+struct ToplistCombinationModelParameters{
+  %TypeHeaderCode
+  #include "models/combination/ToplistCombinationModel.h"
+  %End
+  int seed;
+  int top_k;
+};
 class ToplistCombinationModel
  : public Model,
 //   virtual public RankingScoreIteratorProvider,
@@ -21,8 +28,8 @@ class ToplistCombinationModel
   #include "models/combination/ToplistCombinationModel.h"
   %End
 public:
+  ToplistCombinationModel(ToplistCombinationModelParameters* params);
   void add_model(Model* model);
-  void set_experiment_environment(ExperimentEnvironment* experiment_environment);
   bool self_test();
   void add(RecDat* rec_dat);
   double prediction(RecDat* rec_dat);

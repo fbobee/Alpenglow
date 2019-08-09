@@ -1,5 +1,5 @@
-#ifndef WEIGHTED_MODEL_STRUCTURE
-#define WEIGHTED_MODEL_STRUCTURE
+#ifndef W_M_S_UPDATER_H
+#define W_M_S_UPDATER_H
 
 //SIP_AUTOCONVERT
 
@@ -22,4 +22,4 @@ public:
   virtual void set_wms(WeightedModelStructure* wms)=0;
 };
 
-#endif
+#endif /* W_M_S_UPDATER_H */

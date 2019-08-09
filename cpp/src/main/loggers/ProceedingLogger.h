@@ -1,5 +1,5 @@
-#ifndef PROCEEDING_LOGGER
-#define PROCEEDING_LOGGER
+#ifndef PROCEEDING_LOGGER_H
+#define PROCEEDING_LOGGER_H
 
 //SIP_AUTOCONVERT
 
@@ -22,7 +22,6 @@ class ProceedingLogger : public Logger, public Initializable, public NeedsExperi
         cerr << "OK" << endl;
       }
     }
-    void set_experiment_environment(ExperimentEnvironment* experiment_environment) override { experiment_environment_=experiment_environment; }
     void set_data_iterator(RecommenderDataIterator* recommender_data_iterator){recommender_data_iterator_ = recommender_data_iterator; }
     bool self_test(){
       bool OK = Logger::self_test();
@@ -31,7 +30,10 @@ class ProceedingLogger : public Logger, public Initializable, public NeedsExperi
     }
   protected:
     bool autocalled_initialize() override {
-      if(recommender_data_iterator_==NULL){ recommender_data_iterator_=experiment_environment_->get_recommender_data_iterator(); }
+      if(recommender_data_iterator_==NULL){
+        if (experiment_environment_ == NULL) return false;
+        recommender_data_iterator_=experiment_environment_->get_recommender_data_iterator();
+      }
       if(!recommender_data_iterator_->is_initialized()){
         return false;
       }
@@ -40,10 +42,9 @@ class ProceedingLogger : public Logger, public Initializable, public NeedsExperi
       return true;
     }
   private:
-    ExperimentEnvironment* experiment_environment_ = NULL;
-    RecommenderDataIterator* recommender_data_iterator_ = NULL;
+    const RecommenderDataIterator* recommender_data_iterator_ = NULL;
     int frequency_;
     int size_;
 };
 
-#endif
+#endif /* PROCEEDING_LOGGER_H */

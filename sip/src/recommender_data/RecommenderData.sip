@@ -43,6 +43,8 @@ class RecommenderData : public Initializable{
     SpMatrix* get_full_matrix();
     std::vector<int>* get_all_items();
     std::vector<int>* get_all_users();
+    int get_max_user_id();
+    int get_max_item_id();
     void clear();
 
 
@@ -67,7 +69,7 @@ struct LegacyRecommenderDataParameters{
   %End
   std::string file_name;
   std::string type;
-  int max_time;
+  int experiment_termination_time;
 };
 
 class LegacyRecommenderData : public RecommenderData {

@@ -1,5 +1,5 @@
-#ifndef A_FACTOR_MODEL_GRADIENT_UPDATER
-#define A_FACTOR_MODEL_GRADIENT_UPDATER
+#ifndef ASYMMETRIC_FACTOR_MODEL_GRADIENT_UPDATER_H
+#define ASYMMETRIC_FACTOR_MODEL_GRADIENT_UPDATER_H
 
 #include <iomanip>
 #include "../ModelUpdater.h"
@@ -7,14 +7,10 @@
 
 using namespace std;
 
-struct AsymmetricFactorModelGradientUpdaterParameters{
-  double learning_rate;
+struct AsymmetricFactorModelGradientUpdaterParameters {
+  double learning_rate = 0.1;
   //TODO regularization rate?
-  bool cumulative_item_updates;
-  AsymmetricFactorModelGradientUpdaterParameters(){
-    learning_rate=-1;
-    cumulative_item_updates=false;
-  }
+  bool cumulative_item_updates = false;
 };
 
 class AsymmetricFactorModelGradientUpdater : public ModelGradientUpdater{
@@ -22,9 +18,7 @@ class AsymmetricFactorModelGradientUpdater : public ModelGradientUpdater{
     AsymmetricFactorModelGradientUpdater(AsymmetricFactorModelGradientUpdaterParameters* parameters)
       :learning_rate_(parameters->learning_rate)
       ,cumulative_item_updates_(parameters->cumulative_item_updates)
-      ,model_(NULL)
     { }
-    ~AsymmetricFactorModelGradientUpdater(){};
     void update(RecDat* rec_dat, double gradient) override;
     void message(UpdaterMessage message) override;
     void beginning_of_updating_cycle(RecDat*) override; //TODO private
@@ -46,10 +40,10 @@ class AsymmetricFactorModelGradientUpdater : public ModelGradientUpdater{
     //parameters
     const double learning_rate_; 
     const bool cumulative_item_updates_;
-    AsymmetricFactorModel* model_;
+    AsymmetricFactorModel* model_ = NULL;
 
     //state
     vector<double> cumulated_histvector_updates_;
 };
 
-#endif
+#endif /* ASYMMETRIC_FACTOR_MODEL_GRADIENT_UPDATER_H */

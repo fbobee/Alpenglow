@@ -1,7 +1,10 @@
 
-struct ListConditionalMetaLoggerParameters{
+struct ListConditionalMetaLoggerParameters {
   %TypeHeaderCode
   #include "loggers/ListConditionalMetaLogger.h"
+  %End
+  %Docstring
+  Constructor parameter struct for :py:class:`alpenglow.cpp.ListConditionalMetaLogger`. See documentation there.
   %End
   std::vector<int> should_run_vector;
 };

@@ -1,5 +1,5 @@
-#ifndef I_NEEDEXPERIMENTENVIRONMENT
-#define I_NEEDEXPERIMENTENVIRONMENT
+#ifndef NEEDS_EXPERIMENT_ENVIRONMENT_H
+#define NEEDS_EXPERIMENT_ENVIRONMENT_H
 
 //SIP_AUTOCONVERT
 
@@ -9,7 +9,12 @@ class ExperimentEnvironment;
 
 class NeedsExperimentEnvironment{
   public:
-    virtual void set_experiment_environment(ExperimentEnvironment*) = 0;
+    void set_experiment_environment(const ExperimentEnvironment* experiment_environment){
+      experiment_environment_ = experiment_environment;
+    }
+
+  protected:
+    const ExperimentEnvironment* experiment_environment_ = NULL;
 };
 
-#endif
+#endif /* NEEDS_EXPERIMENT_ENVIRONMENT_H */

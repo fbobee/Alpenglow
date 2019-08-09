@@ -6,7 +6,7 @@ In this tutorial we are going to learn the basic concepts of using Alpenglow by 
 The data
 --------
 
-You can find the dataset at http://info.ilab.sztaki.hu/~fbobee/alpenglow/alpenglow_sample_dataset. This is a processed version of the  [30M dataset](http://info.ilab.sztaki.hu/~fbobee/alpenglow/recoded_online_id_artist_first_filtered), where we
+We will use the dataset at http://info.ilab.sztaki.hu/~fbobee/alpenglow/alpenglow_sample_dataset. This is a processed version of the  `30M dataset <http://info.ilab.sztaki.hu/~fbobee/alpenglow/recoded_online_id_artist_first_filtered>`, where we
 
 - only keep users above a certain activity threshold
 - only keep the first events of listening sessions
@@ -25,7 +25,7 @@ Let's start by importing standard packages and Alpenglow; and then reading the c
 	import matplotlib.pyplot as plt
 	import alpenglow as ag
 
-	data = pd.read_csv('data', nrows=200000)
+	data = pd.read_csv('http://info.ilab.sztaki.hu/~fbobee/alpenglow/alpenglow_sample_dataset', nrows=200000)
 	print(data.columns)
 
 Output::
@@ -109,7 +109,7 @@ Putting it all together:
 	from alpenglow.evaluation import DcgScore
 	from alpenglow.experiments import PopularityExperiment
 
-	data = pd.read_csv('data', nrows=200000)
+	data = pd.read_csv('http://info.ilab.sztaki.hu/~fbobee/alpenglow/alpenglow_sample_dataset', nrows=200000)
 
 	pop_experiment = PopularityExperiment(
 	    top_k=100,
@@ -151,7 +151,7 @@ The default parameters are chosen to perform generally well. However, the best c
 
 .. code-block:: python
 
-	mf_parameter_search = ag.ThreadedParameterSearch(mf_experiment, DcgScore, threads=4)
+	mf_parameter_search = ag.utils.ThreadedParameterSearch(mf_experiment, DcgScore, threads=4)
 	mf_parameter_search.set_parameter_values('negative_rate', np.linspace(10, 100, 4))
 
 The :python:`ThreadedParameterSearch` instance wraps around an :python:`OnlineExperiment` instance. With each call to the function :python:`set_parameter_values`, we can set a new dimension for the grid search, which runs the experiments in parallel accoring to the given :python:`threads` parameter. We can start the hyperparameter search similar to the experiment itself: by calling :python:`run()`.

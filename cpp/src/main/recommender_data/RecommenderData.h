@@ -1,5 +1,5 @@
-#ifndef RECOMMENDER_DATA
-#define RECOMMENDER_DATA
+#ifndef RECOMMENDER_DATA_H
+#define RECOMMENDER_DATA_H
 /* RecommenderData class
    
    RecommenderData reads scrobble files and stores RecDats.
@@ -50,6 +50,14 @@ class RecommenderData : public Initializable {
     SpMatrix* get_full_matrix();
     vector<int>* get_all_items();
     vector<int>* get_all_users();
+    int get_max_user_id(){
+      get_all_users(); //fills vector
+      return *(max_element(users_.begin(),users_.end()));
+    }
+    int get_max_item_id(){
+      get_all_items(); //fills vector
+      return *(max_element(items_.begin(),items_.end()));
+    }
     void clear();
     virtual ~RecommenderData(){}
     bool self_test(){ return size()>0; }
@@ -62,10 +70,10 @@ class RecommenderData : public Initializable {
     vector<int> users_;
 };
 
-struct LegacyRecommenderDataParameters{
+struct LegacyRecommenderDataParameters {
   string file_name = "";
   string type = "online";
-  int max_time = 0;
+  int experiment_termination_time = 0;
 };
 class LegacyRecommenderData : public RecommenderData {
   public:
@@ -76,7 +84,7 @@ class LegacyRecommenderData : public RecommenderData {
     void set_parameters(LegacyRecommenderDataParameters* params){
       file_name_ = params->file_name;
       type_ = params->type;
-      max_time_ = params->max_time;
+      experiment_termination_time_ = params->experiment_termination_time;
     }
     void read_from_file(string file_name, string type); //private?
     void read_from_file_core(istream& ifs, string type); //private?
@@ -94,10 +102,10 @@ class LegacyRecommenderData : public RecommenderData {
     }
   private:
     bool parent_is_initialized_ = false;
-    int max_time_ = 0;
+    int experiment_termination_time_ = 0;
     string file_name_ = "";
     string type_ = "online";
     InlineAttributeReader* attribute_container_;
 };
 
-#endif
+#endif /* RECOMMENDER_DATA_H */

@@ -1,5 +1,5 @@
-#ifndef RANDOM_CHOOSING_COMBINED_MODEL
-#define RANDOM_CHOOSING_COMBINED_MODEL
+#ifndef RANDOM_CHOOSING_COMBINED_MODEL_H
+#define RANDOM_CHOOSING_COMBINED_MODEL_H
 
 //SIP_AUTOCONVERT
 
@@ -9,24 +9,29 @@
 #include "../Model.h"
 #include "../RankingScoreIterator.h"
 #include "../../general_interfaces/Initializable.h"
-#include "../../general_interfaces/NeedsExperimentEnvironment.h"
+#include "../../utils/Random.h"
 
 using namespace std;
 
+struct RandomChoosingCombinedModelParameters{
+  int seed = 745578;
+};
 class RandomChoosingCombinedModel
  : public Model,
    virtual public RankingScoreIteratorProvider,
-   public Initializable,
-   public NeedsExperimentEnvironment
+   public Initializable
 {
 public:
+  RandomChoosingCombinedModel(RandomChoosingCombinedModelParameters* params){
+    random_.set(params->seed);
+  }
   void add_model(Model* model){
     wms_.models_.push_back(model);
     rsip_models_.push_back(dynamic_cast<RankingScoreIteratorProvider*>(model));
   }
-  void set_experiment_environment(ExperimentEnvironment* experiment_environment){ experiment_environment_ = experiment_environment; }
   bool self_test(){
-    bool ok = Model::self_test();
+    bool ok = Model::self_test() && random_.self_test();
+    ok&=random_.self_test();
     if(wms_.models_.size()==0) ok=false;
     return ok;
   }
@@ -38,7 +43,6 @@ public:
   void inject_wms_into(WMSUpdater* object){ object->set_wms(&wms_); }
 protected:
   bool autocalled_initialize() override {
-    random_=experiment_environment_->get_random();
     wms_.distribution_.clear(); //should not be called twice, but...
     wms_.distribution_.resize(wms_.models_.size(),1.0/wms_.models_.size());
     active_model_id_=0;
@@ -56,11 +60,10 @@ private:
   double last_timestamp_ = -1;
   int last_user_ = -1;
   int last_id_ = -1;
-  Random* random_ = NULL;
-  ExperimentEnvironment* experiment_environment_ = NULL;
+  Random random_;
   FRIEND_TEST(TestRandomChoosingCombinedModel, prediction_distribution);
   friend class RandomChoosingCombinedModelExpertUpdater;
 };
 
 
-#endif
+#endif /* RANDOM_CHOOSING_COMBINED_MODEL_H */

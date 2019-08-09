@@ -8,12 +8,12 @@
 RecDat* SimpleIterator::next() {
   return recommender_data_->get(counter_++);
 }
-RecDat* SimpleIterator::get_actual(){
+RecDat* SimpleIterator::get_actual() const {
   return recommender_data_->get(counter_-1);
 }
 
 RecDat* SimpleIterator::get(int index) const {
-  if(index>=counter_) throw exception();
+  if(index>=counter_) throw runtime_error("Attempted to access future.");
   return recommender_data_->get(index);
 }
 

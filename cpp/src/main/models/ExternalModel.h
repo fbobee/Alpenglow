@@ -9,7 +9,7 @@
 
 using namespace std;
 
-struct ExternalModelParameters{
+struct ExternalModelParameters {
   string mode;
 };
 
@@ -25,7 +25,7 @@ class ExternalModel : public Model, public TopListRecommender{
     }
     void read_predictions(string file_name);
     void write_requested_users(string file_name);
-    vector<pair<int,double>> get_top_list(int user, int k, SpMatrix *exclude) override;
+    vector<pair<int,double>> get_top_list(int user, int k, const map<int,double> *exclude) override;
 
   protected:
     const string mode_;
@@ -33,4 +33,4 @@ class ExternalModel : public Model, public TopListRecommender{
     unordered_map<int, vector<int>> toplists_;
 };
 
-#endif
+#endif /* EXTERNAL_MODEL_H */

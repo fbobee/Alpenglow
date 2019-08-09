@@ -1,26 +1,43 @@
-#ifndef SIMPLEITERATOR_H_
-#define SIMPLEITERATOR_H_
-/*
- * SimpleIterator.h
- * Order of rec_dats is the same as order of them in the scrobble file (no shuffling).
- */
-
+#ifndef SIMPLE_ITERATOR_H
+#define SIMPLE_ITERATOR_H
+#include <stdexcept>
 #include "RecommenderDataIterator.h"
 
+//SIP_AUTOCONVERT
 class SimpleIterator : public RecommenderDataIterator {
-  public:
-    SimpleIterator(RecommenderData *rd){
-      counter_=0;
-      recommender_data_=rd;
-    }
-    SimpleIterator(){
-      counter_=0;
-    }
-    RecDat* next() override;
-    RecDat* get(int index) const override;
-    RecDat* get_actual() override;
-    RecDat* get_future(int index) const override;
-    double get_following_timestamp() const override;
+/**
+  This RecommenderDataIterator serves the samples in the original order.
+*/
+public:
+  SimpleIterator(RecommenderData *rd){
+    counter_=0;
+    recommender_data_=rd;
+  }
+  SimpleIterator(){
+    counter_=0;
+  }
+  RecDat* next() override;
+  /**
+    See :py:meth:`alpenglow.cpp.RecommenderDataIterator.next()`
+  */
+  RecDat* get(int index) const override;
+  /**
+    get(int index)
+    See :py:meth:`alpenglow.cpp.RecommenderDataIterator.get()`
+  */
+  RecDat* get_actual() const override;
+  /**
+    See :py:meth:`alpenglow.cpp.RecommenderDataIterator.get_actual()`
+  */
+  RecDat* get_future(int index) const override;
+  /**
+    get_future(int index)
+    See :py:meth:`alpenglow.cpp.RecommenderDataIterator.get_future()`
+  */
+  double get_following_timestamp() const override;
+  /**
+    See :py:meth:`alpenglow.cpp.RecommenderDataIterator.get_following_timestamp()`
+  */
 };
 
-#endif
+#endif /* SIMPLE_ITERATOR_H */

@@ -7,7 +7,7 @@
 
 using namespace std;
 
-struct SparseAttributeContainerParameters{
+struct SparseAttributeContainerParameters {
 
 };
 
@@ -29,4 +29,4 @@ public:
   void load_from_file(string file_name);
 };
 
-#endif
+#endif /* SPARSE_ATTRIBUTE_CONTAINER_H */

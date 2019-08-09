@@ -1,7 +1,10 @@
 
-struct CombinedModelParameters{
+struct CombinedModelParameters {
   %TypeHeaderCode
   #include "models/combination/CombinedModel.h"
+  %End
+  %Docstring
+  Constructor parameter struct for :py:class:`alpenglow.cpp.CombinedModel`. See documentation there.
   %End
   std::string log_file_name;
   int log_frequency;

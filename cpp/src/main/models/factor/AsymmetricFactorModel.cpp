@@ -6,7 +6,7 @@ void AsymmetricFactorModel::set_parameters(AsymmetricFactorModelParameters* para
   factors_parameters_.dimension=parameters->dimension;
   factors_parameters_.seed = parameters->seed;
   history_item_factors_parameters_ = factors_parameters_;
-  history_item_factors_parameters_.seed +=67439852;
+  history_item_factors_parameters_.seed +=1;
   history_item_factors_.set_parameters(history_item_factors_parameters_);
   item_factors_.set_parameters(factors_parameters_);
   cached_user_factor_.resize(dimension_,0);
@@ -96,7 +96,7 @@ vector<double> AsymmetricFactorModel::compute_histvector_sum(RecDat* rec_dat, co
      if(norm_type_=="recency"){
        double time_diff = rec_dat->time - (*it)->time;
        weight = 604800.0 / (604800.0 + time_diff);
-       if(weight > 1) throw exception(); //timediff should be nonnegative
+       if(weight > 1) throw runtime_error("timediff should be nonnegative");
        if(weight < 0.01) break; //do not add small components
      }
      cached_weights_.push_back(weight); //for the gradient updater

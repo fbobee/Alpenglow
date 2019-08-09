@@ -1,5 +1,5 @@
-#ifndef ATTRIBUTE_CONTAINER
-#define ATTRIBUTE_CONTAINER
+#ifndef INLINE_ATTRIBUTE_READER_H
+#define INLINE_ATTRIBUTE_READER_H
 #include <exception>
 #include <iostream>
 #include <fstream>
@@ -29,7 +29,7 @@ class AttributeContainer : public InlineAttributeReader{ //abstract interface
     }
 };
 
-struct GeneralAttributeContainerParameters{
+struct GeneralAttributeContainerParameters {
   string filename;
 };
 template<typename Attribute>
@@ -77,4 +77,4 @@ class GeneralAttributeContainer : public AttributeContainer<Attribute>{
     }
 };
 
-#endif
+#endif /* INLINE_ATTRIBUTE_READER_H */

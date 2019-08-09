@@ -1,39 +1,22 @@
-#ifndef HIGH_PRED_NEGSAMPLEGENERATOR
-#define HIGH_PRED_NEGSAMPLEGENERATOR
+#ifndef HIGH_GRADIENT_NEGATIVE_SAMPLE_GENERATOR_H
+#define HIGH_GRADIENT_NEGATIVE_SAMPLE_GENERATOR_H
 
 #include "NegativeSampleGenerator.h"
 #include "../utils/SortPairDescendingBySecond.h"
-struct HighGradientNegativeSampleGeneratorParameters{
+struct HighGradientNegativeSampleGeneratorParameters {
   int negative_rate;
   int full_negative_rate;
-  bool initialize_all;
-  int max_item;
-  int seed;
+  int seed = 744478;
 };
 class HighGradientNegativeSampleGenerator : public NegativeSampleGenerator {
   public:
     HighGradientNegativeSampleGenerator(HighGradientNegativeSampleGeneratorParameters* params){
       negative_rate_=params->negative_rate;
       full_negative_rate_=params->full_negative_rate;
-      if(params->seed==-1){
-        cerr << "HighGradientNegativeSampleGenerator has no random seed, we use 1537498." << endl;
-        random_.set(1537498);
-      } else {
-        random_.set(params->seed);
-      }
-      model_=NULL;
-      train_matrix_=NULL;
-      initialize_all_ = params->initialize_all;
-      if(initialize_all_){
-        max_item_=params->max_item;
-        generate_item_vector();
-      } else {
-        items_=NULL;
-        max_item_=0;
-      }
+      random_.set(params->seed);
     }
     bool self_test(){
-      bool ok=NegativeSampleGenerator::self_test();
+      bool ok=NegativeSampleGenerator::self_test() && random_.self_test();
       if(negative_rate_==-1){
         ok=false;
         cerr << "error: HighGradientNegativeSampleGenerator::negative_rate==-1" << endl;
@@ -67,20 +50,17 @@ class HighGradientNegativeSampleGenerator : public NegativeSampleGenerator {
       train_matrix_=train_matrix;
     }
     void set_items(vector<int>* items){
-      if(!initialize_all_) items_=items;
+      items_=items;
     }
     vector<int>* generate(RecDat* rec_dat);
   private:
     //config parameters
     int negative_rate_;
     int full_negative_rate_;
-    int max_item_;
-    bool initialize_all_;
-    void generate_item_vector();
     Random random_;
-    Model* model_;
-    SpMatrix* train_matrix_;
-    vector<int>* items_;
+    Model* model_ = NULL;
+    SpMatrix* train_matrix_ = NULL;
+    vector<int>* items_ = NULL;
     //variables
     void generate_all();
     void choose_best();
@@ -92,4 +72,4 @@ class HighGradientNegativeSampleGenerator : public NegativeSampleGenerator {
 
 
 
-#endif
+#endif /* HIGH_GRADIENT_NEGATIVE_SAMPLE_GENERATOR_H */

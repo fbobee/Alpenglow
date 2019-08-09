@@ -1,8 +1,8 @@
-#ifndef FACTOR_MODEL_RANKING_ITERATOR_H
-#define FACTOR_MODEL_RANKING_ITERATOR_H
+#ifndef FACTOR_MODEL_RANKING_SCORE_ITERATOR_H
+#define FACTOR_MODEL_RANKING_SCORE_ITERATOR_H
 
 #include "../RankingScoreIterator.h"
-#include "../../ranking/lemp/LempContainer.h"
+#include "lemp/LempContainer.h"
 #include <utility>
 
 using namespace std;
@@ -26,9 +26,9 @@ public:
 protected:
   double user_factor_norm_;
   vector<double> user_factor_;
-  LempContainer *container_;
+  LempContainer *container_ = NULL;
   multiset<LempBucket*>::iterator next_bucket_;
   vector<pair<int,double>> current_scores_;
 };
 
-#endif
+#endif /* FACTOR_MODEL_RANKING_SCORE_ITERATOR_H */

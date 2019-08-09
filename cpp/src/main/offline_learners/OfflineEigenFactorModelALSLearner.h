@@ -1,5 +1,5 @@
-#ifndef OFFLINE_EIGEN_FACTOR_MODEL_ALS_LEARNER_H
-#define OFFLINE_EIGEN_FACTOR_MODEL_ALS_LEARNER_H
+#ifndef OFFLINE_EIGEN_FACTOR_MODEL_A_L_S_LEARNER_H
+#define OFFLINE_EIGEN_FACTOR_MODEL_A_L_S_LEARNER_H
 
 #include "OfflineLearner.h"
 #include "../models/factor/FactorModel.h"
@@ -8,7 +8,7 @@
 
 using namespace std;
 
-struct OfflineEigenFactorModelALSLearnerParameters{
+struct OfflineEigenFactorModelALSLearnerParameters {
   double number_of_iterations=3;
   double regularization_lambda=0.00001;
   double alpha=40;
@@ -60,4 +60,4 @@ class OfflineEigenFactorModelALSLearner : public OfflineLearner{
     FRIEND_TEST(TestEigenFactorModel, testOfflineEigenFactorModel);
 };
 
-#endif
+#endif /* OFFLINE_EIGEN_FACTOR_MODEL_A_L_S_LEARNER_H */

@@ -1,13 +1,13 @@
-#ifndef USER_TOPLIST_EVALUATOR
-#define USER_TOPLIST_EVALUATOR
+#ifndef OFFLINE_USER_TOPLIST_EVALUATOR_H
+#define OFFLINE_USER_TOPLIST_EVALUATOR_H
 #include <fstream>
 #include "OfflineEvaluator.h"
 #include "../recommender_data/macros.h"
 #include "../recommender_data/RecommenderData.h"
-#include "../utils/PredictionCreator.h"
+#include "../utils/ToplistCreator.h"
 
 using namespace std;
-struct OfflineUserToplistEvaluatorParameters{ //TODO jinjactor
+struct OfflineUserToplistEvaluatorParameters {
   string test_file_name;
   string test_file_type;
   string output_file_name;
@@ -18,10 +18,9 @@ class OfflineUserToplistEvaluator : public OfflineEvaluator{
       test_file_name_ = params->test_file_name;
       test_file_type_ = params->test_file_type;
       output_file_name_ = params->output_file_name;
-      toplist_creator_ = NULL;
     }
     virtual void evaluate();
-    void set_toplist_creator(PredictionCreatorPersonalized* toplist_creator){ toplist_creator_ = toplist_creator; }
+    void set_toplist_creator(ToplistCreatorPersonalized* toplist_creator){ toplist_creator_ = toplist_creator; }
     bool self_test(){
       bool OK = OfflineEvaluator::self_test();
       if(toplist_creator_ == NULL){
@@ -33,8 +32,8 @@ class OfflineUserToplistEvaluator : public OfflineEvaluator{
     string test_file_name_;
     string test_file_type_;
     string output_file_name_;
-    PredictionCreatorPersonalized* toplist_creator_;
+    ToplistCreatorPersonalized* toplist_creator_ = NULL;
 };
 
 
-#endif
+#endif /* OFFLINE_USER_TOPLIST_EVALUATOR_H */

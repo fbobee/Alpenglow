@@ -1,14 +1,14 @@
-#ifndef SVD_MODEL_GRADIENT_UPDATER
-#define SVD_MODEL_GRADIENT_UPDATER
+#ifndef SVDPP_MODEL_GRADIENT_UPDATER_H
+#define SVDPP_MODEL_GRADIENT_UPDATER_H
 
 #include "../ModelUpdater.h"
 #include "SvdppModel.h"
 
 using namespace std;
 
-struct SvdppModelGradientUpdaterParameters{
-  double learning_rate;
-  bool cumulative_item_updates;
+struct SvdppModelGradientUpdaterParameters {
+  double learning_rate = 0.1;
+  bool cumulative_item_updates = false;
   //double regularization_rate; //not implemented
 };
 
@@ -17,7 +17,6 @@ class SvdppModelGradientUpdater : public ModelGradientUpdater {
     SvdppModelGradientUpdater(SvdppModelGradientUpdaterParameters *parameters){
       learning_rate_ = parameters->learning_rate;
       cumulative_item_updates_ = parameters->cumulative_item_updates;
-      model_ = NULL;
     };
     void set_model(SvdppModel* model){
       model_ = model;
@@ -43,8 +42,8 @@ class SvdppModelGradientUpdater : public ModelGradientUpdater {
     bool cumulative_item_updates_;
 
     //state
-    SvdppModel *model_;
+    SvdppModel *model_ = NULL;
     vector<double> cumulated_histvector_updates_;
 };
 
-#endif
+#endif /* SVDPP_MODEL_GRADIENT_UPDATER_H */

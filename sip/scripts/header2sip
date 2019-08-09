@@ -62,7 +62,7 @@ else if [ $mode = "dir" ]
 then
   file_name_list=$(find $1 -name "*.h")
 else #mode=autoconvert
-  file_name_list=$(grep -rl "SIP_AUTOCONVERT" $1)
+  file_name_list=$(grep -rl "SIP_AUTOCONVERT" $1 | egrep "^.*[.]h$")
 fi; fi
 
 echo "Input files:"
@@ -83,7 +83,7 @@ do
   | sed "s/#ifndef.*//" \
   | sed "s/#endif.*//" \
   | sed "s/#define.*//" \
-  | sed "s/using.*//" \
+  | sed "s/^using.*//" \
   | sed -r "s/^\s*class([^{]*);//g" \
   | sed -r "s/^\s*struct([^{]*);//g" \
   | sed '/^\s*friend class.*$/d' \
@@ -91,10 +91,12 @@ do
   | python $script_dir/remove_initlist.py \
   | vim -E +"%normal t(f{d%a;" +%p -cq! /dev/stdin \
   | tr -d "\a" \
+  | sed '/template/,+1 d' \
   | sed -r "s/^([^)]+)[[:space:]]*=[^;]*;/\1;/" \
   | python $script_dir/remove_private.py \
   | tr '\n' '\r' \
-  | sed -r "s/struct([^{]*)\{/struct\1{\nTYPEHEADERCODE/g" \
+  | sed -r "s/struct([^{]*)\{/struct\1{\rTYPEHEADERCODE/g" \
+  | sed -r "s/(struct ([^{]*)Parameters \{\rTYPEHEADERCODE)/\1\n  %Docstring\n  Constructor parameter struct for :py:class:\`alpenglow.cpp.\2\`. See documentation there.\n  %End/g" \
   | sed -r "s/class([^{]*)\{/class\1{\nTYPEHEADERCODE/g" \
   | sed -r "s/class([^{]*public RankingScoreIterator([^A-Z][^{]*)?)\{/COMMENTOUTTHISCLASS class\1{/g" \
   | sed -r "s/(enum[[:space:]]+class)/COMMENTOUTTHISCLASS\1/g" \
@@ -103,14 +105,19 @@ do
   | sed -r "s/([([:space:]])string/\1std::string/g" \
   | sed -r "s/([([:space:]])vector</\1std::vector</g" \
   | sed -r "s|^(.*RankingScoreIterator)|//\1|" \
+  | sed -r "s|^(.*ToplistFromRankingScoreRecommender)|//\1|" \
+  | sed -r "s|^(.*EigenFactors)|//\1|" \
+  | sed -r "s|^(.*MatrixXdRM)|//\1|" \
   | sed -r "s|^(.*UpdaterMessage)|//\1|" \
   | sed -r "s|^(.*stream)|//\1|" \
   | sed -r "s|^(.*pair<)|//\1|" \
   | sed -r "s|^(.*map<)|//\1|" \
   | sed -r "s|^([[:space:]]*typedef)|//\1|" \
-  | sed -r "s/^(.*\(.*\))\s*override\s*;/\1;/g"\
+  | sed -r "s/^(.*\(.*\)(\sconst)?)\s*override\s*;/\1;/g"\
   | python $script_dir/comment_labeled_classes.py \
   | sed "s/COMMENTOUTTHISCLASS//g" \
+  | sed -r "s|; //SIP_THROW (.*)$| throw \1;|" \
+  | grep -v "SIP_REMOVE" \
   | sed "s|///*|//|g" \
   | sed 's/^\s*$//' \
   | cat -s \
@@ -149,6 +156,7 @@ exit 0
 # remove initialization lists
 # remove function definitions
 # remove bell characters inserted by vim
+# remove templates (ex. Random.h)
 # remove initial field values (e.g. int x = -1; )
 # remove private and protected parts (except override functions)
 # prepare for anchestors listed in multiple lines

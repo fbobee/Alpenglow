@@ -1,7 +1,10 @@
 
-struct PrecisionRecallEvaluatorParameters{
+struct PrecisionRecallEvaluatorParameters {
   %TypeHeaderCode
   #include "offline_evaluators/PrecisionRecallEvaluator.h"
+  %End
+  %Docstring
+  Constructor parameter struct for :py:class:`alpenglow.cpp.PrecisionRecallEvaluator`. See documentation there.
   %End
   int cutoff;
   std::string test_file_name;
@@ -15,7 +18,6 @@ class PrecisionRecallEvaluator : public OfflineEvaluator{
   %End
   public:
     PrecisionRecallEvaluator(PrecisionRecallEvaluatorParameters* params);
-    virtual ~PrecisionRecallEvaluator();
     void set_model(Model* model);
     void set_train_data(RecommenderData* recommender_data);
     void set_model_filter(ModelFilter* model_filter);

@@ -1,5 +1,5 @@
-#ifndef RANKING_SCORE_ITERATOR
-#define RANKING_SCORE_ITERATOR
+#ifndef RANKING_SCORE_ITERATOR_H
+#define RANKING_SCORE_ITERATOR_H
 
 #include <utility>
 #include <limits>
@@ -8,7 +8,7 @@
 /**
    Iterator-like interface for the purpose of making toplist and rank computation faster.
 
-   Example usage is in class RankComputer.
+   Example usage is in :py:class:`alpenglow.cpp.RankComputer`.
 */
 class RankingScoreIterator {
 public:
@@ -34,12 +34,12 @@ public:
     }
   }
   /**
-    Returns true if at least one item rest, regardless of the scores 
+     Returns true if at least one item rests, regardless of the scores
 
      @return true if there is at least one more item
   */
   virtual bool has_next(){
-    return this->has_next(std::numeric_limits<double>::lowest());
+    return has_next(std::numeric_limits<double>::lowest());
   };
   /**
      The next item-score pair.
@@ -71,4 +71,4 @@ public:
   virtual RankingScoreIterator* get_ranking_score_iterator(int user)=0;
 };
 
-#endif
+#endif /* RANKING_SCORE_ITERATOR_H */

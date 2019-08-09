@@ -42,7 +42,7 @@ void ToplistCombinationModel::read(istream& file){
 void ToplistCombinationModel::generate_random_values_for_toplists(){
   random_model_indices_.clear();
   for(int i=0;i<experiment_environment_->get_top_k();i++){
-    random_model_indices_.push_back(random_->get_discrete(wms_.distribution_));
+    random_model_indices_.push_back(random_.get_discrete(wms_.distribution_));
   }
 }
 void ToplistCombinationModel::compute_score_map(){
@@ -88,7 +88,7 @@ void ToplistCombinationModel::merge_toplists(){
   for(uint i=0;i<random_model_indices_.size();i++){
     int active_model = random_model_indices_[i];
     int model_counter = model_counters[active_model]; //skip used items
-    while(model_counters[active_model]<toplists_[active_model].size()){
+    while(model_counters[active_model]<(int)toplists_[active_model].size()){
       int possible_item = toplists_[active_model][model_counter].first;
       if(used_items.find(possible_item)==used_items.end()) break;
       model_counter++;
@@ -103,7 +103,7 @@ void ToplistCombinationModel::merge_toplists(){
 
 RankingScoreIterator* ToplistCombinationModel::get_ranking_score_iterator(int user){
   if(random_values_generated_) return NULL; //prediction was called, but toplist is not generated
-  if(user!=last_user_) throw exception(); //prediction should be called first, the parameter here is user, not recdat, we can't update state fields properly
+  if(user!=last_user_) throw runtime_error("prediction should be called first, the parameter here is user, not recdat, we can't update state fields properly");
   rsi_.set_up(toplist_);
   return &rsi_;
 }

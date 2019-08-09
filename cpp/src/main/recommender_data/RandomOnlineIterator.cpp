@@ -1,11 +1,11 @@
 #include "RandomOnlineIterator.h"
 
-RecDat* RandomOnlineIterator::get_actual(){
+RecDat* RandomOnlineIterator::get_actual() const {
   return shuffled_data_[counter_-1];
 }
 
 RecDat* RandomOnlineIterator::get(int index) const {
-  if(index>=counter_) throw exception();
+  if(index>=counter_) throw runtime_error("Attempted to access future.");
   return shuffled_data_[index];
 }
 

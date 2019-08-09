@@ -1,5 +1,5 @@
-#ifndef NEAREST_NEIGHBOR_MODEL
-#define NEAREST_NEIGHBOR_MODEL
+#ifndef NEAREST_NEIGHBOR_MODEL_RANKING_SCORE_ITERATOR_H
+#define NEAREST_NEIGHBOR_MODEL_RANKING_SCORE_ITERATOR_H
 
 //SIP_AUTOCONVERT
 
@@ -17,7 +17,7 @@ public:
   pair<int, double> get_next() override;
   void set_up(vector<SCORE>& predictions, vector<ITEM>& active_items);
   void reinit(){counter_=0;}
-  int unique_items_num(){ throw exception(); } //should not be called as all scores are nonnegatives
+  int unique_items_num() override { throw runtime_error("Not implemented. Should not be called by RankComputer as all scores are nonnegatives."); }
 private:
   void clear(){counter_=0;current_scores_.clear();}
   vector<pair<int,double>> current_scores_;
@@ -39,7 +39,7 @@ public:
     gamma_(params->gamma),
     gamma_threshold_(params->gamma_threshold),
     num_of_neighbors_(params->num_of_neighbors),
-    norm_type_(params->direction==""?"num":params->norm),
+    norm_type_(params->norm==""?"num":params->norm),
     direction_(params->direction==""?"forward":params->direction)
   {}
   double prediction(RecDat* rec_dat) override;
@@ -83,4 +83,4 @@ private:
   
 };
 
-#endif
+#endif /* NEAREST_NEIGHBOR_MODEL_RANKING_SCORE_ITERATOR_H */

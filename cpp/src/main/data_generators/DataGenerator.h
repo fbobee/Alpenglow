@@ -1,5 +1,5 @@
-#ifndef DATA_GENERATOR
-#define DATA_GENERATOR
+#ifndef DATA_GENERATOR_H
+#define DATA_GENERATOR_H
 
 //SIP_AUTOCONVERT
 
@@ -8,6 +8,7 @@
 class DataGenerator {
   public:
     virtual RecommenderData* generate_recommender_data(RecDat*)=0;
+    bool self_test(){ return true; }
 };
 
-#endif
+#endif /* DATA_GENERATOR_H */

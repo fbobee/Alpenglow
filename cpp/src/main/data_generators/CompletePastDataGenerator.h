@@ -1,5 +1,5 @@
-#ifndef COMPLETE_PAST_DATA_GENERATOR
-#define COMPLETE_PAST_DATA_GENERATOR
+#ifndef COMPLETE_PAST_DATA_GENERATOR_H
+#define COMPLETE_PAST_DATA_GENERATOR_H
 
 //SIP_AUTOCONVERT
 
@@ -10,26 +10,25 @@
 class CompletePastDataGenerator : public DataGenerator, public NeedsExperimentEnvironment, public Initializable {
   public:
     RecommenderData* generate_recommender_data(RecDat*) override;
-    void set_experiment_environment(ExperimentEnvironment* experiment_environment){
-      experiment_environment_ = experiment_environment;
-    }
     void set_recommender_data_iterator(RecommenderDataIterator* recommender_data_iterator){
      recommender_data_iterator_ = recommender_data_iterator;
     }
     bool self_test(){
-      bool ok=true;
+      bool ok=DataGenerator::self_test();
       if(recommender_data_iterator_==NULL) ok=false;
       return ok;
     }
   protected:
     bool autocalled_initialize() override {
-      if(recommender_data_iterator_==NULL){ recommender_data_iterator_=experiment_environment_->get_recommender_data_iterator(); }
+      if(recommender_data_iterator_==NULL){
+        if (experiment_environment_==NULL) return false;
+        recommender_data_iterator_=experiment_environment_->get_recommender_data_iterator();
+      }
       return true;
     }
   private:
-    ExperimentEnvironment* experiment_environment_ = NULL;
-    RecommenderDataIterator* recommender_data_iterator_ = NULL;
+    const RecommenderDataIterator* recommender_data_iterator_ = NULL;
     RecommenderData local_recommender_data_;
 };
 
-#endif
+#endif /* COMPLETE_PAST_DATA_GENERATOR_H */

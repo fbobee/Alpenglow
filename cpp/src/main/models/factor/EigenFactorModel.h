@@ -1,5 +1,5 @@
-#ifndef EIGEN_FACTOR_MODEL
-#define EIGEN_FACTOR_MODEL
+#ifndef EIGEN_FACTOR_MODEL_H
+#define EIGEN_FACTOR_MODEL_H
 
 #include <unordered_map>
 #include <eigen3/Eigen/SparseCore>
@@ -9,23 +9,25 @@
 #include "../RankingScoreIterator.h"
 #include "FactorModelRankingScoreIterator.h"
 #include "../TopListRecommender.h"
-#include "../../ranking/lemp/EigenFactorsLempContainer.h"
+#include "lemp/EigenFactorsLempContainer.h"
+
+//SIP_AUTOCONVERT
 
 using namespace std;
 
-struct EigenFactorModelParameters{
+struct EigenFactorModelParameters {
   int dimension=10;
   double begin_min=-0.01;
   double begin_max=0.01;
-  int seed=67439852;
+  int seed=745578;
   int lemp_bucket_size=64;
 };
 
 class EigenFactorModel
 : public Model,
-  public Initializable,
   virtual public RankingScoreIteratorProvider,
-  public ToplistFromRankingScoreRecommender
+  public ToplistFromRankingScoreRecommender,
+  public Initializable
 {
   public:
     EigenFactorModel(EigenFactorModelParameters *parameters):
@@ -39,7 +41,7 @@ class EigenFactorModel
       EigenFactorsParameters factors_parameters;
       factors_parameters.seed = seed_;
       user_factors_.set_parameters(&factors_parameters);
-      factors_parameters.seed += 67439852;
+      factors_parameters.seed += 1;
       item_factors_.set_parameters(&factors_parameters);
     };
     void add(RecDat* rec_dat) override{};
@@ -47,7 +49,6 @@ class EigenFactorModel
     void write(ostream& file) override;
     void read(istream& file) override;
     void clear() override;
-    bool autocalled_initialize() override { clear(); return true;}
     bool self_test(){return true;}
     void resize(int users, int items);
 
@@ -58,6 +59,7 @@ class EigenFactorModel
 
     RankingScoreIterator* get_ranking_score_iterator(int u) override;
   protected:
+    bool autocalled_initialize() override { clear(); return true;}
     //parameters
     const int dimension_;
     const double begin_min_;
@@ -74,4 +76,4 @@ class EigenFactorModel
     FRIEND_TEST(TestEigenFactorModel, testOfflineEigenFactorModel);
 };
 
-#endif
+#endif /* EIGEN_FACTOR_MODEL_H */

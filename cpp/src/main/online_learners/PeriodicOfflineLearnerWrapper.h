@@ -1,5 +1,5 @@
-#ifndef PERIODIC_OFFLINE_LEARNER_WRAPPER
-#define PERIODIC_OFFLINE_LEARNER_WRAPPER
+#ifndef PERIODIC_OFFLINE_LEARNER_WRAPPER_H
+#define PERIODIC_OFFLINE_LEARNER_WRAPPER_H
 
 #include "../general_interfaces/Updater.h"
 #include "../offline_learners/OfflineLearner.h"
@@ -7,7 +7,7 @@
 #include "../data_generators/DataGenerator.h"
 #include "../models/Model.h"
 
-struct PeriodicOfflineLearnerWrapperParameters{
+struct PeriodicOfflineLearnerWrapperParameters {
   bool read_model = false;
   string base_in_file_name = "";
   bool write_model = false;
@@ -66,4 +66,4 @@ class PeriodicOfflineLearnerWrapper : public Updater {
     void update_model(RecDat*);
 };
 
-#endif
+#endif /* PERIODIC_OFFLINE_LEARNER_WRAPPER_H */

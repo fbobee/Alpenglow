@@ -1,12 +1,11 @@
-#ifndef A_FACTOR_MODEL_UPDATER
-#define A_FACTOR_MODEL_UPDATER
+#ifndef ASYMMETRIC_FACTOR_MODEL_UPDATER_H
+#define ASYMMETRIC_FACTOR_MODEL_UPDATER_H
 
 #include "../ModelUpdater.h"
 #include "AsymmetricFactorModel.h"
 
 class AsymmetricFactorModelUpdater : public Updater{
   public:
-    AsymmetricFactorModelUpdater(){ model_=NULL;}
     void update(RecDat* rec_dat) override {
       model_->add(rec_dat);
       model_->user_history_container_.update(rec_dat);
@@ -19,8 +18,7 @@ class AsymmetricFactorModelUpdater : public Updater{
       return ok;
     }
   private:
-    AsymmetricFactorModel* model_;
+    AsymmetricFactorModel* model_ = NULL;
 };
 
-#endif
-
+#endif /* ASYMMETRIC_FACTOR_MODEL_UPDATER_H */

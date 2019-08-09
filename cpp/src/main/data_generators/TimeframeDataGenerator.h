@@ -1,5 +1,5 @@
-#ifndef TIMEFRAME_DATA_GENERATOR
-#define TIMEFRAME_DATA_GENERATOR
+#ifndef TIMEFRAME_DATA_GENERATOR_H
+#define TIMEFRAME_DATA_GENERATOR_H
 
 //SIP_AUTOCONVERT
 
@@ -16,27 +16,27 @@ class TimeframeDataGenerator : public DataGenerator, public NeedsExperimentEnvir
       timeframe_length_ = params->timeframe_length;
     }
     RecommenderData* generate_recommender_data(RecDat*) override;
-    void set_experiment_environment(ExperimentEnvironment* experiment_environment) override {
-      experiment_environment_ = experiment_environment;
-    }
     void set_recommender_data_iterator(RecommenderDataIterator* recommender_data_iterator){
      recommender_data_iterator_ = recommender_data_iterator;
     }
     bool self_test(){
-      bool ok=true;
+      bool ok=DataGenerator::self_test();
       if(recommender_data_iterator_==NULL) ok=false;
       return ok;
     }
   protected:
     bool autocalled_initialize() override {
-      if(recommender_data_iterator_==NULL){ recommender_data_iterator_=experiment_environment_->get_recommender_data_iterator(); }
+      if(recommender_data_iterator_==NULL){
+        if (experiment_environment_==NULL) return false;
+        if (timeframe_length_<0) return false;
+        recommender_data_iterator_=experiment_environment_->get_recommender_data_iterator();
+      }
       return true;
     }
   private:
-    int timeframe_length_ = 86400;
-    ExperimentEnvironment* experiment_environment_ = NULL;
-    RecommenderDataIterator* recommender_data_iterator_ = NULL;
+    int timeframe_length_;
+    const RecommenderDataIterator* recommender_data_iterator_ = NULL;
     RecommenderData local_recommender_data_;
 };
 
-#endif
+#endif /* TIMEFRAME_DATA_GENERATOR_H */

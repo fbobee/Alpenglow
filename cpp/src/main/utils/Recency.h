@@ -1,11 +1,11 @@
-#ifndef RECENCY
-#define RECENCY
+#ifndef RECENCY_H
+#define RECENCY_H
 
 //SIP_AUTOCONVERT
 
 #include <map>
 #include <cmath>
-#include <stdio.h>
+#include <cstdio>
 #include <iostream>
 
 class Recency{
@@ -17,7 +17,7 @@ class Recency{
   private:
 };
 
-struct PowerLawRecencyParameters{
+struct PowerLawRecencyParameters {
   double delta_t;
   double exponent;
 };
@@ -37,4 +37,4 @@ class PowerLawRecency : public Recency{
     double exponent_;
 };
 
-#endif
+#endif /* RECENCY_H */

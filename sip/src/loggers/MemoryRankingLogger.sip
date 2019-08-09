@@ -1,6 +1,6 @@
 struct RankingLog{
   %TypeHeaderCode
-  #include "python/cpp_bridge/MemoryRankingLogger.h"
+  #include "cpp/src/main/loggers/MemoryRankingLogger.h"
   %End
   double time;
   int id;
@@ -13,7 +13,7 @@ struct RankingLog{
 
 struct RankingLogs{
   %TypeHeaderCode
-  #include "python/cpp_bridge/MemoryRankingLogger.h"
+  #include "cpp/src/main/loggers/MemoryRankingLogger.h"
   %End
   int top_k;
   std::vector<RankingLog> logs;
@@ -21,22 +21,33 @@ struct RankingLogs{
 
 struct MemoryRankingLoggerParameters{
   %TypeHeaderCode
-  #include "python/cpp_bridge/MemoryRankingLogger.h"
+  #include "cpp/src/main/loggers/MemoryRankingLogger.h"
   %End
-  double min_time;
+  double evaluation_start_time;
   std::string out_file;
   bool memory_log;
+  int top_k;
+  int random_seed;
 };
 
-class MemoryRankingLogger : public Logger /NoDefaultCtors/{
+class MemoryRankingLogger : public Logger
+  , public NeedsExperimentEnvironment
+  , public Initializable /NoDefaultCtors/
+  {
   %TypeHeaderCode
-  #include "python/cpp_bridge/MemoryRankingLogger.h"
+  #include "cpp/src/main/loggers/MemoryRankingLogger.h"
   %End
   public:
     MemoryRankingLogger(MemoryRankingLoggerParameters* params);
-    ~MemoryRankingLogger();
     void set_model(Model* model);
-    void set_rank_computer(RankComputer* rank_computer);
     void set_ranking_logs(RankingLogs* logs);
+    const RankingLogs* get_ranking_logs() const;
     void run(RecDat* rec_dat);
+    void set_model_filter(ModelFilter* model_filter);
+    void set_train_matrix(SpMatrix* train_matrix);
+    void set_items(std::vector<int> *items);
+    void set_top_pop_container(TopPopContainer* popularity_sorted_container);
+    void set_experiment_environment(ExperimentEnvironment* experiment_environment);
+  protected:
+    bool autocalled_initialize();
 };

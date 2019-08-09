@@ -1,5 +1,5 @@
-#ifndef TRANSITION_PROBABILITY_MODEL_UPDATER
-#define TRANSITION_PROBABILITY_MODEL_UPDATER
+#ifndef TRANSITION_PROBABILITY_MODEL_UPDATER_H
+#define TRANSITION_PROBABILITY_MODEL_UPDATER_H
 
 //SIP_AUTOCONVERT
 
@@ -7,7 +7,7 @@
 #include "TransitionProbabilityModel.h"
 #include "../../utils/LabelContainer.h"
 
-struct TransitionProbabilityModelUpdaterParameters{
+struct TransitionProbabilityModelUpdaterParameters {
   bool filter_freq_updates = false;
   string mode = ""; //old codes: -1: normal; 0: inverted; 1: symmetric
   bool label_transition_mode = false;
@@ -55,4 +55,4 @@ class TransitionProbabilityModelUpdater: public Updater{
     inline bool recording_last_item_is_necessary() const;
 };
 
-#endif
+#endif /* TRANSITION_PROBABILITY_MODEL_UPDATER_H */

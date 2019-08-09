@@ -1,16 +1,21 @@
 
+struct RandomChoosingCombinedModelParameters{
+  %TypeHeaderCode
+  #include "models/combination/RandomChoosingCombinedModel.h"
+  %End
+  int seed;
+};
 class RandomChoosingCombinedModel
  : public Model,
 //   virtual public RankingScoreIteratorProvider,
-   public Initializable,
-   public NeedsExperimentEnvironment
+   public Initializable
 {
   %TypeHeaderCode
   #include "models/combination/RandomChoosingCombinedModel.h"
   %End
 public:
+  RandomChoosingCombinedModel(RandomChoosingCombinedModelParameters* params);
   void add_model(Model* model);
-  void set_experiment_environment(ExperimentEnvironment* experiment_environment);
   bool self_test();
   void add(RecDat* rec_dat);
   double prediction(RecDat* rec_dat);

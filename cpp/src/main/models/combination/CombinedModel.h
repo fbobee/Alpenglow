@@ -1,5 +1,5 @@
-#ifndef COMBINED_MODEL
-#define COMBINED_MODEL
+#ifndef COMBINED_MODEL_H
+#define COMBINED_MODEL_H
 
 //SIP_AUTOCONVERT
 
@@ -8,7 +8,7 @@
 
 using namespace std;
 
-struct CombinedModelParameters{
+struct CombinedModelParameters {
   string log_file_name;
   int log_frequency;
   bool use_user_weights;
@@ -42,4 +42,4 @@ class CombinedModel : public Model {
     friend class CombinedSingleLayerModelGradientUpdater;
 };
 
-#endif
+#endif /* COMBINED_MODEL_H */

@@ -1,11 +1,11 @@
-#ifndef OFFLINE_TOPLIST_EVALUATOR
-#define OFFLINE_TOPLIST_EVALUATOR
+#ifndef OFFLINE_TOP_LIST_EVALUATOR_H
+#define OFFLINE_TOP_LIST_EVALUATOR_H
 #include <gtest/gtest_prod.h>
 #include "OfflineEvaluator.h"
-#include "../utils/PredictionCreator.h"
+#include "../utils/ToplistCreator.h"
 //TODO rename global toplist evaluator
 
-struct OfflineTopListEvaluatorParameters{
+struct OfflineTopListEvaluatorParameters {
   string file_name;
 };
 
@@ -13,25 +13,20 @@ class OfflineTopListEvaluator : public OfflineEvaluator {
   public:
     OfflineTopListEvaluator(OfflineTopListEvaluatorParameters* params){
       ofs.open(params->file_name.c_str());
-      prediction_creator_ = NULL;
     }
-    void set_prediction_creator(PredictionCreator* prediction_creator){ prediction_creator_ = prediction_creator; }
-    void evaluate(){
-  RecDat* rec_dat = new RecDat();
-  vector<RecDat>* top_predictions = prediction_creator_->run(rec_dat);
-  for(uint ii=0; ii<top_predictions->size(); ii++){
-    ofs << top_predictions->at(ii).user << " " << top_predictions->at(ii).item << " " << top_predictions->at(ii).score <<  endl; 
-  } 
-};
+    void set_prediction_creator(ToplistCreator* prediction_creator){
+      prediction_creator_ = prediction_creator;
+    }
+    void evaluate() override;
     bool self_test(){
-      bool OK = OfflineEvaluator::self_test();
-      if(prediction_creator_==NULL){ OK=false; cerr << "OfflineTopListEvaluator::prediction_creator is not set." << endl; }
-      return OK;
+      bool ok = OfflineEvaluator::self_test();
+      if(prediction_creator_==NULL) ok=false;
+      if(!ofs.is_open()) ok=false;
+      return ok;
     }
   private:
-    PredictionCreator* prediction_creator_;
-    ofstream  ofs;
+    ToplistCreator* prediction_creator_ = NULL;
+    ofstream ofs;
 };
 
-#endif
-
+#endif /* OFFLINE_TOP_LIST_EVALUATOR_H */

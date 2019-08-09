@@ -1,12 +1,12 @@
-#ifndef LABEL_FILTER
-#define LABEL_FILTER
+#ifndef LABEL_FILTER_H
+#define LABEL_FILTER_H
 
 #include "ModelFilter.h"
 #include "../utils/LabelContainer.h"
 #include "../models/ModelUpdater.h"
 #include <gtest/gtest_prod.h>
 
-struct LabelFilterParameters{
+struct LabelFilterParameters {
   string label_file_name;
 };
 
@@ -42,4 +42,4 @@ class LabelFilter : public ModelFilter, public Updater {
 };
 
 
-#endif
+#endif /* LABEL_FILTER_H */

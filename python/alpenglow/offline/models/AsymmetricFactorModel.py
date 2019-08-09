@@ -31,7 +31,8 @@ class AsymmetricFactorModel(alpenglow.offline.OfflineModel):
             dimension=self.parameter_default("dimension", 10),
             use_sigmoid=False,
             norm_type="constant",
-            gamma=1
+            gamma=1,
+            initialize_all=False
         )
 
         updater = rs.AsymmetricFactorModelGradientUpdater(**self.parameter_defaults(
@@ -49,7 +50,9 @@ class AsymmetricFactorModel(alpenglow.offline.OfflineModel):
         gradient_computer.add_gradient_updater(updater)
 
         negative_sample_generator = rs.UniformNegativeSampleGenerator(**self.parameter_defaults(
-            negative_rate=0
+            negative_rate=0,
+            initialize_all=False,
+            max_item=-1
         ))
         negative_sample_generator.set_train_matrix(matrix)
         negative_sample_generator.set_items(items)

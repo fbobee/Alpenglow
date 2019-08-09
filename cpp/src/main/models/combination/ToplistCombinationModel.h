@@ -1,18 +1,19 @@
-#ifndef TOPLIST_COMBINATION_MODEL
-#define TOPLIST_COMBINATION_MODEL
+#ifndef TOPLIST_COMBINATION_MODEL_RANKING_SCORE_ITERATOR_H
+#define TOPLIST_COMBINATION_MODEL_RANKING_SCORE_ITERATOR_H
 
 //SIP_AUTOCONVERT
 
 #include <vector>
 #include <set>
+#include <stdexcept>
 #include <gtest/gtest_prod.h>
 #include "WeightedModelStructure.h"
 #include "../Model.h"
 #include "../RankingScoreIterator.h"
 #include "../../general_interfaces/Initializable.h"
 #include "../../general_interfaces/NeedsExperimentEnvironment.h"
-#include "../../ranking/Ranking.h"
-#include "../../utils/PredictionCreator.h"
+#include "../../utils/RankComputer.h"
+#include "../../utils/ToplistCreator.h"
 #include "../../filters/DummyModelFilter.h"
 
 using namespace std;
@@ -23,13 +24,17 @@ public:
   pair<int, double> get_next() override;
   void set_up(vector<pair<int,double>> toplist){ counter_ = 0; current_scores_ = toplist; }
   void reinit(){counter_=0;}
-  int unique_items_num(){ throw exception(); } //should not be called as all scores are nonnegative
+  int unique_items_num(){ throw runtime_error("Not implemented. Should not be called by RankComputer as all scores are nonnegative."); }
 private:
   void clear(){counter_=0;current_scores_.clear();}
   vector<pair<int,double>> current_scores_;
   int counter_;
 };
 
+struct ToplistCombinationModelParameters{
+  int seed = 745578;
+  int top_k = -1;
+};
 class ToplistCombinationModel
  : public Model,
    virtual public RankingScoreIteratorProvider,
@@ -37,12 +42,15 @@ class ToplistCombinationModel
    public NeedsExperimentEnvironment
 {
 public:
+  ToplistCombinationModel(ToplistCombinationModelParameters* params){
+    random_.set(params->seed);
+    seed_ = params->seed;
+  }
   void add_model(Model* model){
     wms_.models_.push_back(model);
   }
-  void set_experiment_environment(ExperimentEnvironment* experiment_environment){ experiment_environment_ = experiment_environment; }
   bool self_test(){
-    bool ok = Model::self_test();
+    bool ok = Model::self_test() && random_.self_test();
     if(wms_.models_.size()==0) ok=false;
     for(auto rank_computer : rank_computers_) ok &= rank_computer->self_test();
     for(auto toplist_creator : toplist_creators_) ok &= toplist_creator->self_test(); 
@@ -61,8 +69,10 @@ public:
   void inject_wms_into(WMSUpdater* object){ object->set_wms(&wms_); }
 protected:
   bool autocalled_initialize() override {
-    random_=experiment_environment_->get_random();
-    top_k_=experiment_environment_->get_top_k();
+    if(top_k_==-1){
+      if(experiment_environment_==NULL) return false;
+      top_k_=experiment_environment_->get_top_k();
+    }
     wms_.distribution_.clear(); //should not be called twice, but...
     wms_.distribution_.resize(wms_.models_.size(),1.0/wms_.models_.size());
     dummy_model_filter_.set_experiment_environment(experiment_environment_);
@@ -71,14 +81,14 @@ protected:
     for(auto model : wms_.models_){
       RankComputerParameters rank_computer_params;
       rank_computer_params.top_k=top_k_;
-      rank_computer_params.random_seed=19263435; //TODO get rid of random seed here, RankComputer should use the common random object
+      rank_computer_params.random_seed=seed_+1;
       RankComputer* rank_computer = new RankComputer(&rank_computer_params);
       rank_computers_.push_back(rank_computer);
       rank_computer->set_experiment_environment(experiment_environment_);
       rank_computer->set_model(model);
       ok &= rank_computer->initialize();
-      PredictionCreatorPersonalizedParameters toplist_computer_params;
-      PredictionCreatorPersonalized* toplist_creator = new PredictionCreatorPersonalized(&toplist_computer_params);
+      ToplistCreatorPersonalizedParameters toplist_computer_params;
+      ToplistCreatorPersonalized* toplist_creator = new ToplistCreatorPersonalized(&toplist_computer_params);
       toplist_creators_.push_back(toplist_creator);
       toplist_creator->set_experiment_environment(experiment_environment_);
       toplist_creator->set_model(model);
@@ -107,16 +117,16 @@ private:
 
   //vector<Model*> models_;
   vector<RankComputer*> rank_computers_;
-  vector<PredictionCreatorPersonalized*> toplist_creators_;
+  vector<ToplistCreatorPersonalized*> toplist_creators_;
   DummyModelFilter dummy_model_filter_;
   //vector<double> distribution_;
   //cache
   double last_timestamp_ = -1;
   int last_user_ = -1;
   int last_id_ = -1;
-  Random* random_ = NULL;
+  Random random_;
+  int seed_ = -1;
   int top_k_ = -1;
-  ExperimentEnvironment* experiment_environment_ = NULL;
   FRIEND_TEST(TestToplistCombinationModel, generate_random_values_for_toplists);
   FRIEND_TEST(TestToplistCombinationModel, compute_last_occ_of_models);
   FRIEND_TEST(TestToplistCombinationModel, test_top_k);
@@ -126,4 +136,4 @@ private:
   //friend class RandomChoosingCombinedModelExpertUpdater;
 };
 
-#endif
+#endif /* TOPLIST_COMBINATION_MODEL_RANKING_SCORE_ITERATOR_H */

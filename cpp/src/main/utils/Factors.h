@@ -1,8 +1,8 @@
-#ifndef FACTORS
-#define FACTORS
+#ifndef FACTORS_H
+#define FACTORS_H
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 #include <iostream>
 #include <fstream>
 #include <math.h>
@@ -15,17 +15,17 @@
 
 using namespace std;
 
-struct FactorsParameters{
-  double begin_max;
-  double begin_min;
-  double dimension;
-  int seed;
+struct FactorsParameters {
+  double begin_max = 0.1;
+  double begin_min = -0.1;
+  double dimension = 0;
+  int seed = 1234;
 };
 
 class Factors{
   public:
     Factors(){};
-    Factors(FactorsParameters parameters) : rnd(parameters.seed){
+    Factors(FactorsParameters parameters) : random_(parameters.seed){
       set_parameters(parameters);
     };
     ~Factors(){
@@ -72,12 +72,15 @@ class Factors{
        }
        return output;            
     }
+    bool self_test(){
+      return random_.self_test();
+    }
     friend class FactorModelReader;
   private:
-    Random rnd;
+    Random random_;
     vector <vector<double>*> factors;
-    double begin_min, begin_max;
-    int dimension;
+    double begin_min = -0.1, begin_max = 0.1;
+    int dimension = 0;
 };
 
 void Factors::lin_combine(int idx, double weight, vector<double>* other){
@@ -95,4 +98,4 @@ void Factors::lin_combine(int idx, double weight, vector<double>* other){
 //  }
 //}
 
-#endif
+#endif /* FACTORS_H */

@@ -1,40 +1,42 @@
-#ifndef SVDMODEL
-#define SVDMODEL
+#ifndef SVDPP_MODEL_H
+#define SVDPP_MODEL_H
 
 #include <unordered_map>
+#include <stdexcept>
 #include "../../utils/Factors.h"
 #include "../../utils/Util.h"
 #include "../../utils/UserHistory.h"
+#include "../../general_interfaces/NeedsExperimentEnvironment.h"
+#include "../../general_interfaces/Initializable.h"
 #include "../Model.h"
 #include <gtest/gtest_prod.h>
 
 using namespace std;
 
 
+//SIP_AUTOCONVERT
 /// SVD++ algorithm
 
-struct SvdppModelParameters{
-  int dimension;
-  double begin_min, begin_max;
-  bool initialize_all, use_sigmoid;
-  int max_item, max_user;
-  double user_vector_weight;
-  double history_weight;
-  string norm_type;
-  double gamma;
-  int seed=928357823;
-  SvdppModelParameters(){
-    dimension=-1;
-    begin_min=-1;begin_max=-1;
-    initialize_all=false;use_sigmoid=false;
-    max_item=-1;max_user=-1;
-    user_vector_weight=-1;history_weight=-1;
-    norm_type="";
-    gamma=-1;
-  }
+struct SvdppModelParameters {
+  int dimension = 10;
+  double begin_min = -0.1;
+  double begin_max = 0.1;
+  bool use_sigmoid = false;
+  double user_vector_weight = 1;
+  double history_weight = 1;
+  string norm_type = "constant";
+  double gamma = 0.8;
+  int seed=745578;
+  int initialize_all = false;
+  int max_item = -1;
+  int max_user = -1;
 };
 
-class SvdppModel : public Model {
+class SvdppModel
+: public Model
+, public NeedsExperimentEnvironment
+, public Initializable
+{
   public:
     SvdppModel(SvdppModelParameters *parameters):
       dimension_(parameters->dimension),
@@ -64,7 +66,6 @@ class SvdppModel : public Model {
     //double get_history_weight(int num);
     //double compute_user_bias(RecDat * rec_dat);
     //double compute_item_bias(RecDat * rec_dat);
-    virtual ~SvdppModel(){}
     bool self_test(){
       bool ok=Model::self_test();
       if(initialize_all_ and (max_item_==-1 or max_user_ ==-1)){
@@ -80,7 +81,8 @@ class SvdppModel : public Model {
         cerr << "SvdppModel::dimension_ <= 0." << endl;
       }
       if(norm_type_!="disabled" and norm_type_!="constant" and norm_type_!="recency" and norm_type_!="exponential" and norm_type_!="youngest"){ ok=false; cerr << "AsymmetricFactorModel::norm_type is not properly set, it should be one of the following: disabled, constant, recency, exponential, youngest." << endl; }
-      if(norm_type_=="exponential" and gamma_==-1){ ok=false; cerr << "SvdppModel::gamma it not set." << endl; }
+      if(norm_type_=="exponential" and gamma_==-1){ ok=false; cerr << "SvdppModel::gamma is not set." << endl; }
+      if(norm_type_=="exponential" and gamma_==1){ ok=false; cerr << "SvdppModel::gamma==1. Hint: consider norm_type=constant." << endl; }
       if(user_vector_weight_==-1 or history_weight_==-1){ cerr << "WARNING: SvdppModel::user_vector_weight or SvdppModel::history_weight is not set." << endl; }
       if(user_vector_weight_==0){ cerr << "SvdppModel::user_vector_weight_=0 makes model identical to AsymmetricFactorModel." << endl; }
       if(history_weight_==0){ cerr << "SvdppModel::history_weight_=0 makes model identical to FactorModel." << endl; }
@@ -90,9 +92,10 @@ class SvdppModel : public Model {
     //parameters
     const int dimension_;
     const double begin_min_, begin_max_;
-    const bool initialize_all_, use_sigmoid_;
-    const int max_user_;
-    const int max_item_;
+    const bool use_sigmoid_;
+    int initialize_all_;
+    int max_user_;
+    int max_item_;
     const double user_vector_weight_;
     const double history_weight_;
     const string norm_type_;
@@ -113,6 +116,22 @@ class SvdppModel : public Model {
     //vector<vector<int>*> user_history_;
 
     //other
+    bool autocalled_initialize() override {
+      if (-1==initialize_all_){
+        if (NULL==experiment_environment_) return false;
+        initialize_all_ = experiment_environment_->get_initialize_all();
+      }
+      if(initialize_all_ && max_item_==-1){
+        if (NULL==experiment_environment_) return false;
+        max_item_ = experiment_environment_->get_max_item_id();
+      }
+      if(initialize_all_ && max_user_==-1){
+        if (NULL==experiment_environment_) return false;
+        max_user_ = experiment_environment_->get_max_user_id();
+      }
+      clear();
+      return true;
+    }
     void set_parameters(SvdppModelParameters* parameters);
     void compute_user_factor(RecDat* rec_dat);
     double compute_norm(int user_activity_size);
@@ -130,4 +149,4 @@ class SvdppModel : public Model {
     //FRIEND_TEST(TestSvdppModelFilter, test_all);
 };
 
-#endif
+#endif /* SVDPP_MODEL_H */

@@ -1,5 +1,5 @@
-#ifndef EVALUATION_LOGGER
-#define EVALUATION_LOGGER
+#ifndef EVALUATION_LOGGER_H
+#define EVALUATION_LOGGER_H
 
 #include <fstream>
 #include <iostream>
@@ -14,7 +14,7 @@
 //kiertekeles mse eseten negativ mintakra is
 //kiertekeles dcg-vel
 
-struct EvaluationLoggerParameters{
+struct EvaluationLoggerParameters {
   string file_name;
   int timeframe;
   string mode;
@@ -28,13 +28,10 @@ class EvaluationLogger : public Logger, public NeedsExperimentEnvironment, publi
       timeframe_ = params->timeframe;
       mode_ = params->mode;
       error_type_ = params->error_type;
-      model_ = NULL;
-      recommender_data_iterator_ = NULL;
     }
     void set_recommender_data_iterator(RecommenderDataIterator* recommender_data_iterator){
       recommender_data_iterator_ = recommender_data_iterator;
     }
-    void set_experiment_environment(ExperimentEnvironment* experiment_environment) override { experiment_environment_=experiment_environment; }
     void set_model(Model* model){
       model_ = model;
     }
@@ -55,6 +52,7 @@ class EvaluationLogger : public Logger, public NeedsExperimentEnvironment, publi
   protected:
     bool autocalled_initialize() override {
       if(recommender_data_iterator_==NULL){
+        if (experiment_environment_ == NULL) return false;
         recommender_data_iterator_=experiment_environment_->get_recommender_data_iterator();
       }
       return true;
@@ -66,12 +64,11 @@ class EvaluationLogger : public Logger, public NeedsExperimentEnvironment, publi
     string mode_;
     string error_type_;
     ofstream output_file_; 
-    Model* model_;
-    RecommenderDataIterator* recommender_data_iterator_;
+    Model* model_ = NULL;
+    const RecommenderDataIterator* recommender_data_iterator_ = NULL;
     //state
     int end_of_timeframe_;
     int beginning_of_timeframe_;
-    ExperimentEnvironment* experiment_environment_;
     double compute_avg_error_on_timeframe(RecDat* rec_dat){
       int direction = (timeframe_>0) ? 1 : -1;
       int index = recommender_data_iterator_->get_counter(); //TODO docs: cant evaluate far future...
@@ -101,4 +98,4 @@ class EvaluationLogger : public Logger, public NeedsExperimentEnvironment, publi
 };
 
 
-#endif
+#endif /* EVALUATION_LOGGER_H */

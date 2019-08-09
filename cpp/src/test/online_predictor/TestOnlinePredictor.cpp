@@ -1,14 +1,14 @@
 #include <vector>
 #include <gtest/gtest.h>
-#include "../../main/utils/PredictionCreator.h"
+#include "../../main/utils/ToplistCreator.h"
 #include "../../main/loggers/OnlinePredictor.h"
 
 namespace {
 
 
-  class DummyPredictionCreator : public PredictionCreator{
+  class DummyToplistCreator : public ToplistCreator{
     public:
-      DummyPredictionCreator(PredictionCreatorParameters* params):PredictionCreator(params){counter=0;}
+      DummyToplistCreator(ToplistCreatorParameters* params):ToplistCreator(params){counter=0;}
       vector<RecDat>* run(RecDat*){counter++;return &topPredictions;}    
       vector<RecDat> topPredictions;
       int counter;
@@ -16,19 +16,19 @@ namespace {
   class TestOnlinePredictor : public ::testing::Test  {
     public:
       OnlinePredictor* onlinePredictor;
-      DummyPredictionCreator* predictionCreator;
+      DummyToplistCreator* predictionCreator;
       vector<RecDat> recDats;
 
       TestOnlinePredictor() {}
       virtual ~TestOnlinePredictor(){}
       virtual void SetUp(){
-        PredictionCreatorParameters params1;
+        ToplistCreatorParameters params1;
         params1.top_k=0;
         params1.exclude_known=0;
-        predictionCreator = new DummyPredictionCreator(&params1);
+        predictionCreator = new DummyToplistCreator(&params1);
 
         OnlinePredictorParameters params;
-        params.min_time = 10;
+        params.evaluation_start_time = 10;
         params.time_frame = 20;
         onlinePredictor = new OnlinePredictor(&params);
         onlinePredictor->set_prediction_creator(predictionCreator);
@@ -50,7 +50,7 @@ namespace {
 } //namespace
 
 TEST_F(TestOnlinePredictor, test) {
-  //min_time=10
+  //evaluation_start_time=10
   //time_frame=20
   //time_frame bounds: [10, 30), [30, 50), 70, 90 etc.
   EXPECT_EQ(0,predictionCreator->counter);

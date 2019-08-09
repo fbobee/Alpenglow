@@ -1,5 +1,5 @@
-#ifndef INPUT_LOGGER
-#define INPUT_LOGGER
+#ifndef INPUT_LOGGER_H
+#define INPUT_LOGGER_H
 
 //SIP_AUTOCONVERT
 
@@ -22,7 +22,9 @@ class InputLogger : public Logger, public Initializable { //SIP_NODEFAULTCTORS
       *output_stream_ << (int) rec_dat->time << " " << rec_dat->user << " " << rec_dat->item << " " << rec_dat->id << " " << rec_dat->score << endl;
     }
     bool self_test(){
-      return output_stream_!=NULL;
+      bool ok = Logger::self_test();
+      if (output_stream_==NULL) ok=false;
+      return ok;
     }
   protected:
     bool autocalled_initialize() override {
@@ -37,4 +39,4 @@ class InputLogger : public Logger, public Initializable { //SIP_NODEFAULTCTORS
   FRIEND_TEST(TestInputLogger, test);
 };
 
-#endif
+#endif /* INPUT_LOGGER_H */

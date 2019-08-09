@@ -1,5 +1,5 @@
-#ifndef TRANSITION_PROBABILITY_MODEL
-#define TRANSITION_PROBABILITY_MODEL
+#ifndef TRANSITION_PROBABILITY_MODEL_RANKING_SCORE_ITERATOR_H
+#define TRANSITION_PROBABILITY_MODEL_RANKING_SCORE_ITERATOR_H
 
 //SIP_AUTOCONVERT
 
@@ -15,7 +15,7 @@ public:
   pair<int, double> get_next() override;
   void set_up(map<int,int>* actual_frequency_map);
   void reinit(){counter_=0;}
-  int unique_items_num(){ throw exception(); } //should not be called as all scores are nonnegatives
+  int unique_items_num() override { throw runtime_error("Not implemented. Should not be called by RankComputer as all scores are nonnegatives."); }
 private:
   void clear(){counter_=0;current_scores_.clear();}
   vector<pair<int,double>> current_scores_;
@@ -49,4 +49,4 @@ class TransitionProbabilityModel
 };
 
 
-#endif
+#endif /* TRANSITION_PROBABILITY_MODEL_RANKING_SCORE_ITERATOR_H */

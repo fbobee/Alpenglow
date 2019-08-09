@@ -1,5 +1,5 @@
-#ifndef GRADIENT_COMPUTER
-#define GRADIENT_COMPUTER
+#ifndef GRADIENT_COMPUTER_H
+#define GRADIENT_COMPUTER_H
 
 //SIP_AUTOCONVERT
 
@@ -12,14 +12,13 @@
 
 using namespace std;
 
-//TODO one level?
 class GradientComputer : public Updater{ //SIP_ABSTRACT
   public:
     void set_model(Model* model){model_=model;}
     void add_gradient_updater(ModelGradientUpdater* gradient_updater){ 
       gradient_updaters_.push_back(gradient_updater);
     }
-    void message(UpdaterMessage message){
+    void message(UpdaterMessage message) override {
       for(auto updater:gradient_updaters_){
         updater->message(message);
       }
@@ -27,6 +26,7 @@ class GradientComputer : public Updater{ //SIP_ABSTRACT
     bool self_test(){
       bool ok=Updater::self_test();
       if(model_==NULL){ ok=false; cerr << "GradientComputer::model is not set." << endl; }
+      if(gradient_updaters_.size()==0){ cerr << "Warning: GradientComputer::gradient_updaters_.size()==0" << endl; }
       return ok;
     }
 
@@ -40,7 +40,7 @@ class GradientComputerPointWise : public GradientComputer{
     void set_objective(ObjectivePointWise* objective){
       objective_ = objective;
     }
-    void update(RecDat* rec_dat){
+    void update(RecDat* rec_dat) override {
       model_->add(rec_dat);
       double gradient=get_gradient(rec_dat);
       for(auto updater:gradient_updaters_) updater->update(rec_dat,gradient); 
@@ -98,4 +98,4 @@ class GradientComputerPointWise : public GradientComputer{
 //     bool has_next_;
 // };
 
-#endif
+#endif /* GRADIENT_COMPUTER_H */

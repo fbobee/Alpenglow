@@ -10,9 +10,12 @@ class Recency{
     virtual void update(int entity, double actual_time) = 0;
 };
 
-struct PowerLawRecencyParameters{
+struct PowerLawRecencyParameters {
   %TypeHeaderCode
   #include "utils/Recency.h"
+  %End
+  %Docstring
+  Constructor parameter struct for :py:class:`alpenglow.cpp.PowerLawRecency`. See documentation there.
   %End
   double delta_t;
   double exponent;

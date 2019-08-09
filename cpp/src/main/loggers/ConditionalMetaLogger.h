@@ -1,5 +1,5 @@
-#ifndef CONDITIONAL_META_LOGGER
-#define CONDITIONAL_META_LOGGER
+#ifndef CONDITIONAL_META_LOGGER_H
+#define CONDITIONAL_META_LOGGER_H
 
 //SIP_AUTOCONVERT
 
@@ -8,7 +8,7 @@ using namespace std;
 
 class ConditionalMetaLogger : public Logger{
   public:
-    virtual void run(RecDat* recDat){
+    void run(RecDat* recDat) override {
       if(should_run(recDat)){
         logger_->run(recDat);
       }
@@ -29,4 +29,4 @@ class ConditionalMetaLogger : public Logger{
     Logger *logger_;
 };
 
-#endif
+#endif /* CONDITIONAL_META_LOGGER_H */

@@ -1,12 +1,9 @@
 #include "OnlinePredictor.h"
 
 void OnlinePredictor::set_parameters(OnlinePredictorParameters* params){
-  min_time_ = params->min_time;
+  evaluation_start_time_ = params->evaluation_start_time;
   time_frame_ = params->time_frame;
   ofs_.open(params->file_name.c_str());
-  past_time_frame_ = 0;
-  actual_time_frame_ = 0;
-  prediction_creator_=NULL;
 }
 
 void OnlinePredictor::run(RecDat* rec_dat){
@@ -22,8 +19,8 @@ void OnlinePredictor::run(RecDat* rec_dat){
 
 bool OnlinePredictor::do_predict(RecDat* rec_dat){
   double actual_time = rec_dat->time;
-  actual_time_frame_ = (int)(actual_time - min_time_)/(time_frame_);
-  if(actual_time > min_time_ && actual_time_frame_ !=past_time_frame_){
+  actual_time_frame_ = (int)(actual_time - evaluation_start_time_)/(time_frame_);
+  if(actual_time > evaluation_start_time_ && actual_time_frame_ !=past_time_frame_){
     past_time_frame_ = actual_time_frame_;
     return true;
   }
