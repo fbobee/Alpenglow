@@ -5,6 +5,7 @@
 [![Build Status](https://travis-ci.com/rpalovics/Alpenglow.svg?branch=master)](https://travis-ci.com/rpalovics/Alpenglow)
 [![Docs Status](https://readthedocs.org/projects/alpenglow/badge/?version=latest)](https://alpenglow.readthedocs.io/en/latest/)
 
+
 - Alpenglow is a free and open source C++ framework with easy-to-use Python API.
 - Alpenglow is capable of training and evaluating industry standard recommendation algorithms including variants of popularity, nearest neighbor, and factorization models.
 - Besides batch training and evaluation, Alpenglow supports *online training* of recommendation models capable of adapting to concept drift in non-stationary environments.
